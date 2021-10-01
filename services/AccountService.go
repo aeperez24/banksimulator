@@ -5,23 +5,24 @@ import (
 )
 
 type AccountService interface {
-	getBalance()
-	transferMoneyTo()
+	GetBalance() float32
+	TransferMoneyTo(accountNumber string) bool
 }
 
-type AccountServiceImp struct {
-	Acount           string
+type accountServiceImp struct {
+	AcountNumber     string
 	AcountRepository model.AccountRepository
 }
 
-func newAccountService(acount model.Account, AcountRepository model.AccountRepository) AccountService {
-	return AccountServiceImp{}
+func NewAccountService(accountNumber string, accountRepository model.AccountRepository) AccountService {
+	return accountServiceImp{accountNumber, accountRepository}
 }
 
-func (acountService AccountServiceImp) getBalance() {
-
+func (acountService accountServiceImp) GetBalance() float32 {
+	return acountService.AcountRepository.
+		FindAccountByAccountNumber(acountService.AcountNumber).Balance
 }
 
-func (acountService AccountServiceImp) transferMoneyTo() {
-
+func (acountService accountServiceImp) TransferMoneyTo(accountNumber string) bool {
+	return false
 }
