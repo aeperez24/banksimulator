@@ -6,7 +6,7 @@ import (
 
 type AccountService interface {
 	GetBalance() float32
-	TransferMoneyTo(accountNumber string) bool
+	TransferMoneyTo(accountNumber string, amount float32) bool
 }
 
 type accountServiceImp struct {
@@ -23,6 +23,15 @@ func (acountService accountServiceImp) GetBalance() float32 {
 		FindAccountByAccountNumber(acountService.AcountNumber).Balance
 }
 
-func (acountService accountServiceImp) TransferMoneyTo(accountNumber string) bool {
+func (accountService accountServiceImp) TransferMoneyTo(toAccountNumber string, amount float32) bool {
+
+	if amount <= accountService.GetBalance() {
+
+		repository := accountService.AcountRepository
+		repository.ModifyBalanceForAccount(accountService.AcountNumber, -amount)
+		repository.ModifyBalanceForAccount(toAccountNumber, amount)
+		return true
+
+	}
 	return false
 }
