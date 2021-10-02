@@ -93,3 +93,16 @@ func TestMustNotTransferAmountWhenIsGreaterThanBalance(t *testing.T) {
 	}
 
 }
+
+func TestDepositBalanceSuccesfully(t *testing.T) {
+	mock := getAccountRepositoryMock()
+	service := services.NewAccountService("1", mock)
+	expectedBalanceAccount := float32(180)
+	service.Deposit(80)
+	balanceAccount := mock.FindAccountByAccountNumber("1").Balance
+
+	if expectedBalanceAccount != balanceAccount {
+		t.Errorf("expected %v and received %v", expectedBalanceAccount, balanceAccount)
+	}
+
+}
