@@ -11,8 +11,8 @@ type AccountService interface {
 }
 
 type accountServiceImp struct {
-	AcountNumber     string
-	AcountRepository model.AccountRepository
+	AccountNumber     string
+	AccountRepository model.AccountRepository
 }
 
 func NewAccountService(accountNumber string, accountRepository model.AccountRepository) AccountService {
@@ -20,16 +20,16 @@ func NewAccountService(accountNumber string, accountRepository model.AccountRepo
 }
 
 func (acountService accountServiceImp) GetBalance() float32 {
-	return acountService.AcountRepository.
-		FindAccountByAccountNumber(acountService.AcountNumber).Balance
+	return acountService.AccountRepository.
+		FindAccountByAccountNumber(acountService.AccountNumber).Balance
 }
 
 func (accountService accountServiceImp) TransferMoneyTo(toAccountNumber string, amount float32) bool {
 
 	if amount <= accountService.GetBalance() {
 
-		repository := accountService.AcountRepository
-		repository.ModifyBalanceForAccount(accountService.AcountNumber, -amount)
+		repository := accountService.AccountRepository
+		repository.ModifyBalanceForAccount(accountService.AccountNumber, -amount)
 		repository.ModifyBalanceForAccount(toAccountNumber, amount)
 		return true
 
@@ -38,7 +38,7 @@ func (accountService accountServiceImp) TransferMoneyTo(toAccountNumber string, 
 }
 
 func (accountService accountServiceImp) Deposit(amount float32) bool {
-	repository := accountService.AcountRepository
-	repository.ModifyBalanceForAccount(accountService.AcountNumber, amount)
+	repository := accountService.AccountRepository
+	repository.ModifyBalanceForAccount(accountService.AccountNumber, amount)
 	return true
 }
