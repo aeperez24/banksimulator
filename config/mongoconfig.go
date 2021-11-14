@@ -9,13 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var DB *mongo.Client
+var DBConfig MongoCofig
 
 func init() {
 	host := "localhost"
 	port := 27017
-	username := "productListUser"
-	password := "productListPassword"
+	username := "root"
+	password := "example"
 
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", host, port))
 
@@ -31,6 +31,11 @@ func init() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to mongo")
-	DB = client
+	log.Println("Connected to mongo")
+	DBConfig = MongoCofig{DB: client, DatabaseName: "bank"}
+}
+
+type MongoCofig struct {
+	DB           *mongo.Client
+	DatabaseName string
 }

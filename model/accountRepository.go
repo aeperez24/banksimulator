@@ -1,21 +1,49 @@
 package model
-import "go.mongodb.org/mongo-driver/mongo"
+
+import (
+	"aeperez24/banksimulator/config"
+	"context"
+
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
+
+const ACCOUNT_COLLECTION = "account"
+
 type AccountRepository interface {
 	FindAccountByAccountNumber(account string) Account
 	ModifyBalanceForAccount(accountNumber string, amount float32) bool
 }
 
-type accountMongoRepository struct{
-	DBClient *mongo.Client
+type accountMongoRepository struct {
+	dbClient     *mongo.Client
+	databaseName string
 }
 
-func (r accountMongoRepository)FindAccountByAccountNumber(account string)Account{
-	return Account{}
+func (repo accountMongoRepository) FindAccountByAccountNumber(accountNumber string) Account {
+	var account Account
+	filter := bson.D{primitive.E{Key: "AccountNumber", Value: accountNumber}}
+	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
+	collection.FindOne(context.TODO(), filter).Decode(&account)
+	return account
 }
-func (r accountMongoRepository)ModifyBalanceForAccount(accountNumber string, amount float32)bool{
-	return false
-}
-func NewAccountMongoRepository(DBClient *mongo.Client)AccountRepository{
+func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string, amount float32) bool {
+	filter := bson.D{primitive.E{Key: "AccountNumber", Value: accountNumber}}
+	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
+	update := bson.D{{"$inc", bson.D{
+		{"Balance", amount},
+	}}}
 
-	return accountMongoRepository{DBClient: DBClient}
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return err == nil
+}
+func NewAccountMongoRepository(DBConfig config.MongoCofig) AccountRepository {
+
+	return accountMongoRepository{dbClient: DBConfig.DB, databaseName: DBConfig.DatabaseName}
 }

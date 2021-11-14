@@ -1,34 +1,65 @@
 package main
 
-import "fmt"
-import "net/http"
+import (
+	"aeperez24/banksimulator/config"
+	"aeperez24/banksimulator/dto"
+	"aeperez24/banksimulator/model"
+	"aeperez24/banksimulator/services"
+	"encoding/json"
+	"net/http"
 
-import "github.com/gorilla/mux"
-import "aeperez24/banksimulator/config"
-import "aeperez24/banksimulator/services"
-import "aeperez24/banksimulator/model"
+	"github.com/gorilla/mux"
+)
+
 func main() {
-    r := mux.NewRouter()
+	r := mux.NewRouter()
 
-    r.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-        fmt.Print("api called")
-		service := getAccountService("1234")
-		service.Deposit(100)
-		respondWithJSON(w,200,nil)
-    })
+	r.HandleFunc("/balance/{AccountNumber}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		service := getAccountService(vars["AccountNumber"])
+		respondWithJSON(w, 200, service.GetBalance())
+	})
 
-    http.ListenAndServe(":80", r)
+	r.HandleFunc("/transfer/", func(w http.ResponseWriter, r *http.Request) {
+		var transferRequest dto.TransferRequest
+
+		err := json.NewDecoder(r.Body).Decode(&transferRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		service := getAccountService(transferRequest.FromAccount)
+		service.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
+		respondWithJSON(w, 200, service.GetBalance())
+
+	})
+
+	r.HandleFunc("/deposit/", func(w http.ResponseWriter, r *http.Request) {
+		var depositRequest dto.DepositRequest
+
+		err := json.NewDecoder(r.Body).Decode(&depositRequest)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		service := getAccountService(depositRequest.ToAccount)
+		service.Deposit(depositRequest.Amount)
+		respondWithJSON(w, 200, service.GetBalance())
+
+	})
+
+	http.ListenAndServe(":8080", r)
 }
 
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-   // response, _ := json.Marshal(payload)
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(code)
-   // w.Write(response)
+	response, _ := json.Marshal(payload)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }
 
-func getAccountService(accountNumber string) services.AccountService{
-	 repo := model.NewAccountMongoRepository(config.DB)
-	 return services.NewAccountService(accountNumber,repo)
+func getAccountService(accountNumber string) services.AccountService {
+	repo := model.NewAccountMongoRepository(config.DBConfig)
+	return services.NewAccountService(accountNumber, repo)
 
 }

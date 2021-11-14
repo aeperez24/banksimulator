@@ -8,8 +8,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const USER_DATABASE_NAME = "promotions"
-const USER_COLLECTION = "products"
+const USER_DATABASE_NAME = "bank"
+const USER_COLLECTION = "user"
 
 type UserRepository interface {
 	FindUserByName(username string) User
