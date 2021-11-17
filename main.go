@@ -11,13 +11,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
+var DBConfig config.MongoCofig
+
+func init() {
+	if (config.MongoCofig{} == DBConfig) {
+		DBConfig = config.BuildDBConfig()
+	}
+
+}
+
 func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/balance/{AccountNumber}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		service := getAccountService(vars["AccountNumber"])
-		respondWithJSON(w, 200, service.GetBalance())
+		balance, _ := service.GetBalance()
+		respondWithJSON(w, 200, balance)
 	})
 
 	r.HandleFunc("/transfer/", func(w http.ResponseWriter, r *http.Request) {
@@ -30,7 +40,8 @@ func main() {
 		}
 		service := getAccountService(transferRequest.FromAccount)
 		service.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
-		respondWithJSON(w, 200, service.GetBalance())
+		balance, _ := service.GetBalance()
+		respondWithJSON(w, 200, balance)
 
 	})
 
@@ -44,7 +55,8 @@ func main() {
 		}
 		service := getAccountService(depositRequest.ToAccount)
 		service.Deposit(depositRequest.Amount)
-		respondWithJSON(w, 200, service.GetBalance())
+		balance, _ := service.GetBalance()
+		respondWithJSON(w, 200, balance)
 
 	})
 
@@ -59,7 +71,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 func getAccountService(accountNumber string) services.AccountService {
-	repo := model.NewAccountMongoRepository(config.DBConfig)
+	repo := model.NewAccountMongoRepository(DBConfig)
 	return services.NewAccountService(accountNumber, repo)
 
 }

@@ -9,9 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var DBConfig MongoCofig
-
-func init() {
+func BuildDBConfig() MongoCofig {
 	host := "localhost"
 	port := 27017
 	username := "root"
@@ -32,7 +30,7 @@ func init() {
 	}
 
 	log.Println("Connected to mongo")
-	DBConfig = MongoCofig{DB: client, DatabaseName: "bank"}
+	return MongoCofig{DB: client, DatabaseName: "bank"}
 }
 
 type MongoCofig struct {

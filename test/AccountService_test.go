@@ -41,7 +41,7 @@ func getAccountRepositoryMock() model.AccountRepository {
 func TestGetBalance(t *testing.T) {
 	mock := getAccountRepositoryMock()
 	service := services.NewAccountService("1", mock)
-	result := service.GetBalance()
+	result, _ := service.GetBalance()
 	expected := 100
 	if 100 != result {
 		t.Errorf("expected %v and received %v", expected, result)
@@ -57,16 +57,14 @@ func TestMustTransferAmountSuccesfully(t *testing.T) {
 	balanceAccount2 := mock.FindAccountByAccountNumber("2").Balance
 	expectedBalanceAccount1 := float32(50)
 	expectedBalanceAccount2 := float32(250)
-	expectedResult := true
 	if expectedBalanceAccount1 != balanceAccount1 {
 		t.Errorf("expected %v and received %v", expectedBalanceAccount1, balanceAccount1)
 	}
 	if expectedBalanceAccount2 != balanceAccount2 {
 		t.Errorf("expected %v and received %v", expectedBalanceAccount2, balanceAccount2)
 	}
-
-	if expectedResult != result {
-		t.Errorf("expected %v and received %v", expectedResult, result)
+	if result != nil {
+		t.Errorf("expected %v and received %v", nil, result)
 	}
 
 }
@@ -79,7 +77,6 @@ func TestMustNotTransferAmountWhenIsGreaterThanBalance(t *testing.T) {
 	balanceAccount2 := mock.FindAccountByAccountNumber("2").Balance
 	expectedBalanceAccount1 := float32(100)
 	expectedBalanceAccount2 := float32(200)
-	expectedResult := false
 
 	if expectedBalanceAccount1 != balanceAccount1 {
 		t.Errorf("expected %v and received %v", expectedBalanceAccount1, balanceAccount1)
@@ -88,8 +85,8 @@ func TestMustNotTransferAmountWhenIsGreaterThanBalance(t *testing.T) {
 		t.Errorf("expected %v and received %v", expectedBalanceAccount2, balanceAccount2)
 	}
 
-	if expectedResult != result {
-		t.Errorf("expected %v and received %v", expectedResult, result)
+	if nil == result {
+		t.Errorf("expected error")
 	}
 
 }

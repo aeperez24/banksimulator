@@ -1,8 +1,8 @@
 package model
 
 type User struct {
-	Username          string
-	Password          string
-	active            bool
+	Username   string
+	Password   string
+	Active     bool
 	IDDocument []string
 }
