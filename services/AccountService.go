@@ -3,6 +3,7 @@ package services
 import (
 	"aeperez24/banksimulator/model"
 	"errors"
+	"log"
 )
 
 type AccountService interface {
@@ -26,7 +27,12 @@ func (acountService accountServiceImp) GetBalance() (float32, error) {
 }
 
 func (accountService accountServiceImp) TransferMoneyTo(toAccountNumber string, amount float32) error {
-	balance, _ := accountService.GetBalance()
+	balance, error := accountService.GetBalance()
+	if error != nil {
+		log.Fatal(error)
+		return error
+	}
+
 	if amount <= balance {
 
 		repository := accountService.AccountRepository
@@ -34,12 +40,13 @@ func (accountService accountServiceImp) TransferMoneyTo(toAccountNumber string, 
 		repository.ModifyBalanceForAccount(toAccountNumber, amount)
 		return nil
 
+	} else {
+		return errors.New("amount higher than banlance")
 	}
-	return errors.New("")
+
 }
 
 func (accountService accountServiceImp) Deposit(amount float32) error {
 	repository := accountService.AccountRepository
-	repository.ModifyBalanceForAccount(accountService.AccountNumber, amount)
-	return nil
+	return repository.ModifyBalanceForAccount(accountService.AccountNumber, amount)
 }

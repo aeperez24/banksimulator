@@ -15,7 +15,8 @@ const ACCOUNT_COLLECTION = "account"
 
 type AccountRepository interface {
 	FindAccountByAccountNumber(account string) Account
-	ModifyBalanceForAccount(accountNumber string, amount float32) bool
+	ModifyBalanceForAccount(accountNumber string, amount float32) error
+	SaveTransaction(account string, amount Transaction) error
 }
 
 type accountMongoRepository struct {
@@ -30,7 +31,7 @@ func (repo accountMongoRepository) FindAccountByAccountNumber(accountNumber stri
 	collection.FindOne(context.TODO(), filter).Decode(&account)
 	return account
 }
-func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string, amount float32) bool {
+func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string, amount float32) error {
 	filter := bson.D{primitive.E{Key: "AccountNumber", Value: accountNumber}}
 	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
 	update := bson.D{{"$inc", bson.D{{"Balance", amount}}}}
@@ -39,8 +40,14 @@ func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string,
 	if err != nil {
 		log.Fatal(err)
 	}
-	return err == nil
+	return err
 }
+
+func (repo accountMongoRepository) SaveTransaction(account string, transaction Transaction) error {
+
+	return nil
+}
+
 func NewAccountMongoRepository(DBConfig config.MongoCofig) AccountRepository {
 
 	return accountMongoRepository{dbClient: DBConfig.DB, databaseName: DBConfig.DatabaseName}

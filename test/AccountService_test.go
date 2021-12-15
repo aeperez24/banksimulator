@@ -6,19 +6,6 @@ import (
 	"testing"
 )
 
-type AccountRepositoryMock struct {
-	FindAccountByAccountNumberFn func(account string) model.Account
-	ModifyBalanceForAccountFn    func(accountNumber string, amount float32) bool
-}
-
-func (a AccountRepositoryMock) FindAccountByAccountNumber(account string) model.Account {
-	return a.FindAccountByAccountNumberFn(account)
-}
-
-func (a AccountRepositoryMock) ModifyBalanceForAccount(accountNumber string, amount float32) bool {
-	return a.ModifyBalanceForAccountFn(accountNumber, amount)
-}
-
 func getAccountRepositoryMock() model.AccountRepository {
 	accountsMap := make(map[string]model.Account)
 	accountsMap["1"] = model.Account{AccountNumber: "1", Balance: 100}
@@ -26,13 +13,13 @@ func getAccountRepositoryMock() model.AccountRepository {
 	findAccountByAccountNumber := func(number string) model.Account {
 		return accountsMap[number]
 	}
-	modifyBalance := func(accountNumber string, amount float32) bool {
+	modifyBalance := func(accountNumber string, amount float32) error {
 
 		account := accountsMap[accountNumber]
 		account.Balance = account.Balance + amount
 		accountsMap[accountNumber] = account
 
-		return true
+		return nil
 	}
 	return AccountRepositoryMock{FindAccountByAccountNumberFn: findAccountByAccountNumber,
 		ModifyBalanceForAccountFn: modifyBalance}
