@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type TransferRequest struct {
 	FromAccount string
 	ToAccount   string
@@ -9,4 +11,11 @@ type TransferRequest struct {
 type DepositRequest struct {
 	ToAccount string
 	Amount    float32
+} 
+
+type TransactionDto struct{
+	AccountFrom string
+	AccountTo   string
+	Amount      float32
+	Date        time.Time
 }

@@ -1,25 +1,37 @@
 package services
 
-import "aeperez24/banksimulator/model"
+import (
+	"aeperez24/banksimulator/dto"
+	"aeperez24/banksimulator/model"
+)
 
 type TransactionService interface {
-	GetTransactions() ([]model.Transaction, error)
-	SaveTransaction(model.Transaction) error
+	GetTransactions(string) ([]model.Transaction, error)
+	SaveTransaction(dto.TransactionDto) error
 }
 
 type transactionServiceImpl struct {
-	AccountNumber     string
 	AccountRepository model.AccountRepository
 }
 
-func (service transactionServiceImpl) GetTransactions() ([]model.Transaction, error) {
-	return []model.Transaction{}, nil
+func (service transactionServiceImpl) GetTransactions(accountNumber string) ([]model.Transaction, error) {
+	account := service.AccountRepository.FindAccountByAccountNumber(accountNumber)
+	return account.Transactions, nil
 }
 
-func (service transactionServiceImpl) SaveTransaction(model.Transaction) error {
+func (service transactionServiceImpl) SaveTransaction(transactiondto dto.TransactionDto) error {
+	transaction := model.Transaction{
+		AccountFrom: transactiondto.AccountFrom,
+		AccountTo:   transactiondto.AccountTo,
+		Amount:      transactiondto.Amount,
+	}
+
+	service.AccountRepository.SaveTransaction(transaction.AccountFrom, transaction)
+	service.AccountRepository.SaveTransaction(transaction.AccountTo, transaction)
+
 	return nil
 }
 
-func NewTransactionService(accountNumber string, accountRepository model.AccountRepository) TransactionService {
-	return transactionServiceImpl{accountNumber, accountRepository}
+func NewTransactionService(accountRepository model.AccountRepository) TransactionService {
+	return transactionServiceImpl{accountRepository}
 }

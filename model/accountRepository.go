@@ -43,9 +43,17 @@ func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string,
 	return err
 }
 
-func (repo accountMongoRepository) SaveTransaction(account string, transaction Transaction) error {
+func (repo accountMongoRepository) SaveTransaction(accountNumber string, transaction Transaction) error {
 
-	return nil
+	filter := bson.D{primitive.E{Key: "AccountNumber", Value: accountNumber}}
+	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
+	update := bson.D{{"$push", bson.D{{"Transactions", transaction}}}}
+
+	_, err := collection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return err
 }
 
 func NewAccountMongoRepository(DBConfig config.MongoCofig) AccountRepository {

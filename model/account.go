@@ -6,7 +6,7 @@ type Transaction struct {
 	AccountFrom string
 	AccountTo   string
 	Amount      float32
-	date        time.Time
+	Date        time.Time
 }
 
 type Account struct {
