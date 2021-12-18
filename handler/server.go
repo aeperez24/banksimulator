@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"aeperez24/banksimulator/port"
@@ -24,9 +24,14 @@ func (mserver ServerImpl) Start() {
 	muxHandler.HandleFunc("/transfer/", mserver.AccountHandler.TransferMoney)
 	muxHandler.HandleFunc("/deposit/", mserver.AccountHandler.Deposit)
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
-	mserver.HttpServer.ListenAndServe()
+	err := mserver.HttpServer.ListenAndServe()
+	if err != nil {
+		println(err)
+		panic(err)
+	}
 
 }
+
 func (mserver ServerImpl) Stop() {
 	mserver.HttpServer.Shutdown(context.Background())
 
