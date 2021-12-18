@@ -2,22 +2,17 @@ package services
 
 import (
 	"aeperez24/banksimulator/model"
+	"aeperez24/banksimulator/port"
 	"errors"
 	"log"
 )
-
-type AccountService interface {
-	GetBalance() (float32, error)
-	TransferMoneyTo(accountNumber string, amount float32) error
-	Deposit(amount float32) error
-}
 
 type accountServiceImp struct {
 	AccountNumber     string
 	AccountRepository model.AccountRepository
 }
 
-func NewAccountService(accountNumber string, accountRepository model.AccountRepository) AccountService {
+func NewAccountService(accountNumber string, accountRepository model.AccountRepository) port.AccountService {
 	return accountServiceImp{accountNumber, accountRepository}
 }
 

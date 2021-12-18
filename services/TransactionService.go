@@ -3,12 +3,8 @@ package services
 import (
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
+	"aeperez24/banksimulator/port"
 )
-
-type TransactionService interface {
-	GetTransactions(string) ([]model.Transaction, error)
-	SaveTransaction(dto.TransactionDto) error
-}
 
 type transactionServiceImpl struct {
 	AccountRepository model.AccountRepository
@@ -32,6 +28,6 @@ func (service transactionServiceImpl) SaveTransaction(transactiondto dto.Transac
 	return nil
 }
 
-func NewTransactionService(accountRepository model.AccountRepository) TransactionService {
+func NewTransactionService(accountRepository model.AccountRepository) port.TransactionService {
 	return transactionServiceImpl{accountRepository}
 }

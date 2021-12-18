@@ -4,7 +4,9 @@ import (
 	"aeperez24/banksimulator/config"
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
+	"aeperez24/banksimulator/port"
 	"aeperez24/banksimulator/services"
+
 	"encoding/json"
 	"net/http"
 
@@ -70,7 +72,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
-func getAccountService(accountNumber string) services.AccountService {
+func getAccountService(accountNumber string) port.AccountService {
 	repo := model.NewAccountMongoRepository(DBConfig)
 	return services.NewAccountService(accountNumber, repo)
 
