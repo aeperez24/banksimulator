@@ -22,3 +22,7 @@ type AccountHandler interface {
 	TransferMoney(http.ResponseWriter, *http.Request)
 	Deposit(http.ResponseWriter, *http.Request)
 }
+type Server interface {
+	Start()
+	Stop()
+}
