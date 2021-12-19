@@ -7,8 +7,15 @@ type Transaction struct {
 	AccountTo   string
 	Amount      float32
 	Date        time.Time
-	Type        string
+	Type        TransactionType
 }
+type TransactionType string
+
+const (
+	TransferType TransactionType = "Transfer"
+	DepositType  TransactionType = "Deposit"
+	WithdrawType TransactionType = "Withdraw"
+)
 
 type Account struct {
 	AccountNumber string

@@ -4,6 +4,7 @@ import (
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/services"
+	"fmt"
 	"testing"
 )
 
@@ -28,7 +29,7 @@ func TestGetTransactionsWithSuccess(t *testing.T) {
 
 }
 
-func TestSaveTransaction(t *testing.T) {
+func TestSaveTransferTransaction(t *testing.T) {
 	repo := AccountRepositoryMock{}
 	transactionMap := make(map[string]model.Transaction)
 
@@ -37,8 +38,8 @@ func TestSaveTransaction(t *testing.T) {
 		return nil
 	}
 	service := services.NewTransactionService(repo)
-	transactionDto := dto.TransactionDto{AccountFrom: "from", AccountTo: "to", Amount: 100}
-	transaction := model.Transaction{AccountFrom: "from", AccountTo: "to", Amount: 100}
+	transactionDto := dto.TransactionDto{AccountFrom: "from", AccountTo: "to", Amount: 100, Type: "Transfer"}
+	transaction := model.Transaction{AccountFrom: "from", AccountTo: "to", Amount: 100, Type: model.TransferType}
 
 	service.SaveTransaction(transactionDto)
 
@@ -48,6 +49,26 @@ func TestSaveTransaction(t *testing.T) {
 
 	if transaction != transactionMap["to"] {
 		t.Errorf("expected %v and received %v", transaction, transactionMap["to"])
+	}
+
+}
+
+func TestSaveTransactionError(t *testing.T) {
+	repo := AccountRepositoryMock{}
+	transactionMap := make(map[string]model.Transaction)
+
+	repo.SaveTransactionFn = func(account string, transaction model.Transaction) error {
+		transactionMap[account] = transaction
+		return nil
+	}
+	service := services.NewTransactionService(repo)
+	transactionDto := dto.TransactionDto{AccountFrom: "from", AccountTo: "to", Amount: 100, Type: "BadType"}
+
+	saveError := service.SaveTransaction(transactionDto)
+	fmt.Println(saveError)
+
+	if saveError == nil {
+		t.Error("expected Error")
 	}
 
 }
