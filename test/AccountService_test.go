@@ -90,3 +90,25 @@ func TestDepositBalanceSuccesfully(t *testing.T) {
 	}
 
 }
+
+func TestWithdrawBalanceSuccesfully(t *testing.T) {
+	mock := getAccountRepositoryMock()
+	service := services.NewAccountService("1", mock)
+	expectedBalanceAccount := float32(20)
+	service.Withdraw(80)
+	balanceAccount := mock.FindAccountByAccountNumber("1").Balance
+
+	if expectedBalanceAccount != balanceAccount {
+		t.Errorf("expected %v and received %v", expectedBalanceAccount, balanceAccount)
+	}
+
+}
+func TestWithdrawGreaterThanBalanceError(t *testing.T) {
+	mock := getAccountRepositoryMock()
+	service := services.NewAccountService("1", mock)
+	resultError := service.Withdraw(150)
+	if resultError == nil {
+		t.Error("error is expected")
+	}
+
+}

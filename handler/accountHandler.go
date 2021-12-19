@@ -36,6 +36,14 @@ func (handler accountHandlerImpl) TransferMoney(w http.ResponseWriter, r *http.R
 	}
 	service := handler.getAccountService(transferRequest.FromAccount)
 	service.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
+	trxService := handler.getTransactionService()
+	trxService.SaveTransaction(dto.TransactionDto{
+		AccountFrom: transferRequest.FromAccount,
+		AccountTo:   transferRequest.ToAccount,
+		Amount:      transferRequest.Amount,
+		Type:        port.TransferType,
+	})
+
 	balance, _ := service.GetBalance()
 	respondWithJSON(w, 200, balance)
 
@@ -50,13 +58,23 @@ func (handler accountHandlerImpl) Deposit(w http.ResponseWriter, r *http.Request
 	}
 	service := handler.getAccountService(depositRequest.ToAccount)
 	service.Deposit(depositRequest.Amount)
+	trxService := handler.getTransactionService()
+	trxService.SaveTransaction(dto.TransactionDto{
+		AccountTo: depositRequest.ToAccount,
+		Amount:    depositRequest.Amount,
+		Type:      port.DepositType,
+	})
 	balance, _ := service.GetBalance()
 	respondWithJSON(w, 200, balance)
-
 }
 
 func (a accountHandlerImpl) getAccountService(accountNumber string) port.AccountService {
 	return services.NewAccountService(accountNumber, a.AccountRepository)
+
+}
+
+func (a accountHandlerImpl) getTransactionService() port.TransactionService {
+	return services.NewTransactionService(a.AccountRepository)
 
 }
 

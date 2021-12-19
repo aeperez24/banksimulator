@@ -45,3 +45,12 @@ func (accountService accountServiceImp) Deposit(amount float32) error {
 	repository := accountService.AccountRepository
 	return repository.ModifyBalanceForAccount(accountService.AccountNumber, amount)
 }
+func (accountService accountServiceImp) Withdraw(amount float32) error {
+	balance, _ := accountService.GetBalance()
+	if balance > amount {
+		return accountService.Deposit(-amount)
+	} else {
+		return errors.New("amount is greater than current balance")
+	}
+
+}

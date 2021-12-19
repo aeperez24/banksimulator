@@ -10,6 +10,7 @@ type AccountService interface {
 	GetBalance() (float32, error)
 	TransferMoneyTo(accountNumber string, amount float32) error
 	Deposit(amount float32) error
+	Withdraw(amount float32) error
 }
 
 type TransactionService interface {
@@ -26,3 +27,9 @@ type Server interface {
 	Start()
 	Stop()
 }
+
+const (
+	TransferType string = "Transfer"
+	DepositType  string = "Deposit"
+	WithdrawType string = "Withdraw"
+)
