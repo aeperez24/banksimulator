@@ -53,6 +53,45 @@ func TestSaveTransferTransaction(t *testing.T) {
 
 }
 
+func TestSaveDepositTransaction(t *testing.T) {
+	repo := AccountRepositoryMock{}
+	transactionMap := make(map[string]model.Transaction)
+
+	repo.SaveTransactionFn = func(account string, transaction model.Transaction) error {
+		transactionMap[account] = transaction
+		return nil
+	}
+	service := services.NewTransactionService(repo)
+	transactionDto := dto.TransactionDto{AccountFrom: "from", AccountTo: "to", Amount: 100, Type: "Deposit"}
+	transaction := model.Transaction{AccountTo: "to", Amount: 100, Type: model.DepositType}
+
+	service.SaveTransaction(transactionDto)
+
+	if transaction != transactionMap["to"] {
+		t.Errorf("expected %v and received %v", transaction, transactionMap["to"])
+	}
+
+}
+
+func TestSaveWithdrawTransaction(t *testing.T) {
+	repo := AccountRepositoryMock{}
+	transactionMap := make(map[string]model.Transaction)
+
+	repo.SaveTransactionFn = func(account string, transaction model.Transaction) error {
+		transactionMap[account] = transaction
+		return nil
+	}
+	service := services.NewTransactionService(repo)
+	transactionDto := dto.TransactionDto{AccountFrom: "from", AccountTo: "to", Amount: 100, Type: "Withdraw"}
+	transaction := model.Transaction{AccountFrom: "from", Amount: 100, Type: model.WithdrawType}
+
+	service.SaveTransaction(transactionDto)
+
+	if transaction != transactionMap["from"] {
+		t.Errorf("expected %v and received %v", transaction, transactionMap["to"])
+	}
+
+}
 func TestSaveTransactionError(t *testing.T) {
 	repo := AccountRepositoryMock{}
 	transactionMap := make(map[string]model.Transaction)
