@@ -23,6 +23,8 @@ func (mserver ServerImpl) Start() {
 	muxHandler.HandleFunc("/balance/{AccountNumber}", mserver.AccountHandler.GetBalance)
 	muxHandler.HandleFunc("/transfer/", mserver.AccountHandler.TransferMoney)
 	muxHandler.HandleFunc("/deposit/", mserver.AccountHandler.Deposit)
+	muxHandler.HandleFunc("/transaction/{AccountNumber}", mserver.AccountHandler.GetTransactions)
+
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
 	err := mserver.HttpServer.ListenAndServe()
 	if err != nil {

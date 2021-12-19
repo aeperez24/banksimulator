@@ -22,6 +22,7 @@ type AccountHandler interface {
 	GetBalance(http.ResponseWriter, *http.Request)
 	TransferMoney(http.ResponseWriter, *http.Request)
 	Deposit(http.ResponseWriter, *http.Request)
+	GetTransactions(http.ResponseWriter, *http.Request)
 }
 type Server interface {
 	Start()

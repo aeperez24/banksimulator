@@ -26,6 +26,14 @@ func TestGetBalance(t *testing.T) {
 
 	})
 }
-func TestGetTrnsactions(t *testing.T) {
+func TestGetTransactions(t *testing.T) {
+	RunTestWithIntegrationServer(func(port string) {
+		api := fmt.Sprintf("http://localhost:%s/transaction/account1Number", port)
+		resp, _ := http.Get(api)
+		body, _ := ioutil.ReadAll(resp.Body)
+		//TODO ASSERT
+		println(string(body))
+
+	})
 
 }

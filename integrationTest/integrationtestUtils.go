@@ -32,10 +32,24 @@ func createAccountForTests(dbConfig config.MongoCofig) []interface{} {
 	account1 := model.Account{
 		AccountNumber: "account1Number",
 		Balance:       100,
+		Transactions: []model.Transaction{{
+			AccountTo: "account1Number",
+			Amount:    100,
+			Type:      model.DepositType,
+		}},
 	}
 	account2 := model.Account{
 		AccountNumber: "account2Number",
 		Balance:       100,
+		Transactions: []model.Transaction{{
+			AccountTo: "account1Number",
+			Amount:    50,
+			Type:      model.DepositType,
+		}, {
+			AccountTo: "account1Number",
+			Amount:    50,
+			Type:      model.DepositType,
+		}},
 	}
 	resultID1, error1 := collection.InsertOne(context.TODO(), account1)
 	resultID2, error2 := collection.InsertOne(context.TODO(), account2)

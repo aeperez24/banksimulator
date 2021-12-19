@@ -26,6 +26,13 @@ func (handler accountHandlerImpl) GetBalance(w http.ResponseWriter, r *http.Requ
 	respondWithJSON(w, 200, balance)
 }
 
+func (handler accountHandlerImpl) GetTransactions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	service := handler.getTransactionService()
+	transactions, _ := service.GetTransactions(vars["AccountNumber"])
+	respondWithJSON(w, 200, transactions)
+}
+
 func (handler accountHandlerImpl) TransferMoney(w http.ResponseWriter, r *http.Request) {
 	var transferRequest dto.TransferRequest
 
