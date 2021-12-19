@@ -80,7 +80,7 @@ func (a accountHandlerImpl) getTransactionService() port.TransactionService {
 
 //TODO MOVE THIS TO AN UTIL module
 func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
-	response, _ := json.Marshal(payload)
+	response, _ := json.Marshal(dto.ResponseDto{Data: payload})
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)

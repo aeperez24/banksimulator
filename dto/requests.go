@@ -20,3 +20,7 @@ type TransactionDto struct {
 	Date        time.Time
 	Type        string
 }
+
+type ResponseDto struct {
+	Data interface{}
+}
