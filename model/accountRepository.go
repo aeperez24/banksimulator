@@ -34,7 +34,7 @@ func (repo accountMongoRepository) FindAccountByAccountNumber(accountNumber stri
 func (repo accountMongoRepository) ModifyBalanceForAccount(accountNumber string, amount float32) error {
 	filter := bson.D{primitive.E{Key: "accountnumber", Value: accountNumber}}
 	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
-	update := bson.D{{"$inc", bson.D{{"Balance", amount}}}}
+	update := bson.D{{"$inc", bson.D{{"balance", amount}}}}
 
 	_, err := collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {

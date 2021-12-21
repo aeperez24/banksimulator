@@ -95,13 +95,15 @@ func ExecuteDeposit(accountService port.AccountService, transactionService port.
 
 func ExecuteTransfer(accountService port.AccountService, transactionService port.TransactionService,
 	transferRequest dto.TransferRequest) float32 {
-	accountService.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
-	transactionService.SaveTransaction(dto.TransactionDto{
-		AccountFrom: transferRequest.FromAccount,
-		AccountTo:   transferRequest.ToAccount,
-		Amount:      transferRequest.Amount,
-		Type:        port.TransferType,
-	})
+	err := accountService.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
+	if err == nil {
+		transactionService.SaveTransaction(dto.TransactionDto{
+			AccountFrom: transferRequest.FromAccount,
+			AccountTo:   transferRequest.ToAccount,
+			Amount:      transferRequest.Amount,
+			Type:        port.TransferType,
+		})
+	}
 
 	balance, _ := accountService.GetBalance()
 	return balance

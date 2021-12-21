@@ -3,7 +3,6 @@
 Mini Banco
 Se requiere crear una aplicación web que simule las funcionalidades de un banco, para ello se
 necesitan los siguientes módulos:
-Home
 Home con acción de registro y login.
 Registro
 Formulario que permita crear una nueva cuenta, los campos serian:
@@ -23,10 +22,3 @@ registrada en el sistema.
 Listado de movimientos
 Debe mostrar los movimientos realizados (para cada cliente consultado), ya se cargas de saldo y
 transferencias (entrantes y salientes).
-Tecnologías a usar:
- Frontend: Angular 6+
- Backend: Node express (Puede ser con typescript)
- BD: Mysql, Mongo, Postgres, libre elección.Esto se debe desplegar en algún servicio cloud para su revisión, además debes entregar acceso al
-repositorio de front y backend.
-Cualquier feature extra es bienvenido (envió de correos, diseño extra, etc).
-Orden y calidad del código serán considerados.
