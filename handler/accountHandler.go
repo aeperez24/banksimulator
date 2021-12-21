@@ -42,16 +42,9 @@ func (handler accountHandlerImpl) TransferMoney(w http.ResponseWriter, r *http.R
 		return
 	}
 	service := handler.getAccountService(transferRequest.FromAccount)
-	service.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
 	trxService := handler.getTransactionService()
-	trxService.SaveTransaction(dto.TransactionDto{
-		AccountFrom: transferRequest.FromAccount,
-		AccountTo:   transferRequest.ToAccount,
-		Amount:      transferRequest.Amount,
-		Type:        port.TransferType,
-	})
 
-	balance, _ := service.GetBalance()
+	balance := ExecuteTransfer(service, trxService, transferRequest)
 	respondWithJSON(w, 200, balance)
 
 }
@@ -64,14 +57,8 @@ func (handler accountHandlerImpl) Deposit(w http.ResponseWriter, r *http.Request
 		return
 	}
 	service := handler.getAccountService(depositRequest.ToAccount)
-	service.Deposit(depositRequest.Amount)
 	trxService := handler.getTransactionService()
-	trxService.SaveTransaction(dto.TransactionDto{
-		AccountTo: depositRequest.ToAccount,
-		Amount:    depositRequest.Amount,
-		Type:      port.DepositType,
-	})
-	balance, _ := service.GetBalance()
+	balance := ExecuteDeposit(service, trxService, depositRequest)
 	respondWithJSON(w, 200, balance)
 }
 
@@ -91,4 +78,31 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func ExecuteDeposit(accountService port.AccountService, transactionService port.TransactionService,
+	depositRequest dto.DepositRequest) float32 {
+
+	accountService.Deposit(depositRequest.Amount)
+	transactionService.SaveTransaction(dto.TransactionDto{
+		AccountTo: depositRequest.ToAccount,
+		Amount:    depositRequest.Amount,
+		Type:      port.DepositType,
+	})
+	balance, _ := accountService.GetBalance()
+	return balance
+}
+
+func ExecuteTransfer(accountService port.AccountService, transactionService port.TransactionService,
+	transferRequest dto.TransferRequest) float32 {
+	accountService.TransferMoneyTo(transferRequest.ToAccount, transferRequest.Amount)
+	transactionService.SaveTransaction(dto.TransactionDto{
+		AccountFrom: transferRequest.FromAccount,
+		AccountTo:   transferRequest.ToAccount,
+		Amount:      transferRequest.Amount,
+		Type:        port.TransferType,
+	})
+
+	balance, _ := accountService.GetBalance()
+	return balance
 }
