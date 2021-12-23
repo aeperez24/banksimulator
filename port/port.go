@@ -13,6 +13,11 @@ type AccountService interface {
 	Withdraw(amount float32) error
 }
 
+type UserService interface {
+	CreateUser(user model.User) error
+	ValidateUserameAndPassword(username string, password string) bool
+}
+
 type TransactionService interface {
 	GetTransactions(string) ([]model.Transaction, error)
 	SaveTransaction(dto.TransactionDto) error
