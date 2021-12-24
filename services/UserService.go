@@ -13,10 +13,24 @@ type userServiceImpl struct {
 }
 
 func (userService userServiceImpl) CreateUser(user model.User) error {
-	foundUser := userService.UserRepository.FindUserByName(user.Username)
+	if user.Password == "" {
+		return errors.New("password is required")
+	}
+	if user.Username == "" {
+		return errors.New("username is required")
+	}
 
+	if user.IDDocument == "" {
+		return errors.New("idDocument is required")
+	}
+
+	foundUser := userService.UserRepository.FindUserByName(user.Username)
 	if (foundUser != model.User{}) {
 		return errors.New("username already exists")
+	}
+	idDocumentAlreadyRegistered := userService.UserRepository.FindUserByIdDocument(user.IDDocument) != model.User{}
+	if idDocumentAlreadyRegistered {
+		return errors.New("document already registered")
 	}
 
 	_, err := userService.UserRepository.CreateUser(user)

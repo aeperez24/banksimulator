@@ -23,6 +23,7 @@ type TransactionDto struct {
 
 type UserDto struct {
 }
+
 type ResponseDto struct {
 	Data interface{}
 }

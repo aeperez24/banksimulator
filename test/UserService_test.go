@@ -17,10 +17,14 @@ func TestCreateUser(t *testing.T) {
 	}, CreateUserFn: func(user model.User) (interface{}, error) {
 		createCalled = true
 		return "id", nil
+	}, FindUserByIdDocumentFn: func(idDocument string) model.User {
+		return model.User{}
 	}}
 	service := services.NewUserService(repo)
 	user := model.User{
-		Username: "user",
+		Username:   "user",
+		Password:   "pass",
+		IDDocument: "document",
 	}
 	error := service.CreateUser(user)
 	if error != nil {
@@ -133,5 +137,27 @@ func TestMustFailWhenCreateUserWithoutPasword(t *testing.T) {
 	error := service.CreateUser(user)
 	if error == nil {
 		t.Errorf("expected error")
+	}
+}
+
+func TestMustFailWhenCreateAndDocumentIdAlreadyExists(t *testing.T) {
+	repo := UserRepositoryMock{FindUserByNameFn: func(username string) model.User {
+		if username != "user" {
+			return model.User{Username: "user", Password: "pass"}
+		} else {
+			return model.User{}
+		}
+	}, FindUserByIdDocumentFn: func(idDocument string) model.User {
+		return model.User{Username: "user", Password: "pass"}
+	}}
+	service := services.NewUserService(repo)
+	user := model.User{
+		Username:   "user",
+		Password:   "pass",
+		IDDocument: "document",
+	}
+	error := service.CreateUser(user)
+	if error == nil {
+		t.Errorf("expected  error")
 	}
 }

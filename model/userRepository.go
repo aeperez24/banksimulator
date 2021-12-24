@@ -14,6 +14,7 @@ const USER_COLLECTION = "user"
 type UserRepository interface {
 	FindUserByName(username string) User
 	CreateUser(user User) (interface{}, error)
+	FindUserByIdDocument(idDocument string) User
 }
 
 type userRepositoryMongoRepository struct {
@@ -30,6 +31,15 @@ func (repo userRepositoryMongoRepository) FindUserByName(username string) User {
 	return user
 }
 
+func (repo userRepositoryMongoRepository) FindUserByIdDocument(idDocument string) User {
+
+	var user User
+	filter := bson.D{primitive.E{Key: "iddocument", Value: idDocument}}
+
+	collection := repo.DBClient.Database(USER_DATABASE_NAME).Collection(USER_COLLECTION)
+	collection.FindOne(context.TODO(), filter).Decode(&user)
+	return user
+}
 func (repo userRepositoryMongoRepository) CreateUser(user User) (interface{}, error) {
 
 	collection := repo.DBClient.Database(USER_DATABASE_NAME).Collection(USER_COLLECTION)
