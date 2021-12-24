@@ -3,8 +3,9 @@ package services
 import (
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
-
+	"crypto/sha256"
 	"errors"
+	"fmt"
 )
 
 type userServiceImpl struct {
@@ -22,8 +23,14 @@ func (userService userServiceImpl) CreateUser(user model.User) error {
 	return err
 }
 
+func (userService userServiceImpl) FindUser(username string) model.User {
+	return userService.UserRepository.FindUserByName(username)
+}
 func (userService userServiceImpl) ValidateUserameAndPassword(username string, password string) bool {
-	return false
+	sha := sha256.Sum256([]byte(password))
+	user := userService.FindUser(username)
+	strSha := fmt.Sprintf("%x", sha)
+	return strSha == user.Password
 }
 
 func NewUserService(repo model.UserRepository) port.UserService {
