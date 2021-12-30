@@ -29,6 +29,9 @@ type AccountHandler interface {
 	Deposit(http.ResponseWriter, *http.Request)
 	GetTransactions(http.ResponseWriter, *http.Request)
 }
+type UserHandler interface {
+	CreateUser(http.ResponseWriter, *http.Request)
+}
 type Server interface {
 	Start()
 	Stop()
