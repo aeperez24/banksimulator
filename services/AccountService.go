@@ -12,6 +12,12 @@ type accountServiceImp struct {
 	AccountRepository model.AccountRepository
 }
 
+func NewAccountServiceProvider(AccountRepository model.AccountRepository) func(string) port.AccountService {
+	result := func(accountNumber string) port.AccountService {
+		return NewAccountService(accountNumber, AccountRepository)
+	}
+	return result
+}
 func NewAccountService(accountNumber string, accountRepository model.AccountRepository) port.AccountService {
 	return accountServiceImp{accountNumber, accountRepository}
 }
