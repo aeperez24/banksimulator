@@ -21,9 +21,14 @@ type TransactionDto struct {
 	Type        string
 }
 
-type UserDto struct {
+type UserWithPasswordDto struct {
+	BasicUserDto
+	Password string
 }
-
+type BasicUserDto struct {
+	Username   string
+	IDDocument string
+}
 type ResponseDto struct {
 	Data interface{}
 }

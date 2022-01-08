@@ -36,6 +36,10 @@ type Server interface {
 	Start()
 	Stop()
 }
+type TokenService interface {
+	CreateToken(dto.BasicUserDto) (string, error)
+	ExtractBasicUseDtoFromToken(receivedToken string) (dto.BasicUserDto, error)
+}
 
 const (
 	TransferType string = "Transfer"
