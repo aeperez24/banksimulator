@@ -1,6 +1,7 @@
 package test
 
 import (
+	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/services"
 	"testing"
@@ -21,11 +22,12 @@ func TestCreateUser(t *testing.T) {
 		return model.User{}
 	}}
 	service := services.NewUserService(repo)
-	user := model.User{
-		Username:   "user",
-		Password:   "pass",
-		IDDocument: "document",
+	user := dto.UserWithPasswordDto{
+		Password: "pass",
 	}
+	user.Username = "user"
+	user.IDDocument = "document"
+
 	error := service.CreateUser(user)
 	if error != nil {
 		t.Errorf("expected %v and received %v", nil, error)
@@ -47,11 +49,11 @@ func TestMustFailWhenCreateUserWithUsernameInDatabase(t *testing.T) {
 		return "id", nil
 	}}
 	service := services.NewUserService(repo)
-	user := model.User{
-		Username:   "user",
-		Password:   "pass",
-		IDDocument: "document",
+	user := dto.UserWithPasswordDto{
+		Password: "pass",
 	}
+	user.Username = "user"
+	user.IDDocument = "document"
 	error := service.CreateUser(user)
 	if error == nil {
 		t.Errorf("expected error")
@@ -109,10 +111,10 @@ func TestMustFailWhenCreateUserWithoutDocumentId(t *testing.T) {
 		return "id", nil
 	}}
 	service := services.NewUserService(repo)
-	user := model.User{
-		Username: "user",
+	user := dto.UserWithPasswordDto{
 		Password: "pass",
 	}
+	user.Username = "user"
 	error := service.CreateUser(user)
 	if error == nil {
 		t.Errorf("expected error")
@@ -130,10 +132,9 @@ func TestMustFailWhenCreateUserWithoutPasword(t *testing.T) {
 		return "id", nil
 	}}
 	service := services.NewUserService(repo)
-	user := model.User{
-		Username:   "user",
-		IDDocument: "document",
-	}
+	user := dto.UserWithPasswordDto{}
+	user.Username = "user"
+	user.IDDocument = "document"
 	error := service.CreateUser(user)
 	if error == nil {
 		t.Errorf("expected error")
@@ -151,11 +152,11 @@ func TestMustFailWhenCreateAndDocumentIdAlreadyExists(t *testing.T) {
 		return model.User{Username: "user", Password: "pass"}
 	}}
 	service := services.NewUserService(repo)
-	user := model.User{
-		Username:   "user",
-		Password:   "pass",
-		IDDocument: "document",
+	user := dto.UserWithPasswordDto{
+		Password: "pass",
 	}
+	user.Username = "user"
+	user.IDDocument = "document"
 	error := service.CreateUser(user)
 	if error == nil {
 		t.Errorf("expected  error")
