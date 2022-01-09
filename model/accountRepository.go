@@ -17,6 +17,7 @@ type AccountRepository interface {
 	FindAccountByAccountNumber(account string) Account
 	ModifyBalanceForAccount(accountNumber string, amount float32) error
 	SaveTransaction(account string, amount Transaction) error
+	CreateAccount(account Account) (interface{}, error)
 }
 
 type accountMongoRepository struct {
@@ -54,6 +55,18 @@ func (repo accountMongoRepository) SaveTransaction(accountNumber string, transac
 		log.Fatal(err)
 	}
 	return err
+}
+
+func (repo accountMongoRepository) CreateAccount(account Account) (interface{}, error) {
+
+	collection := repo.dbClient.Database(repo.databaseName).Collection(ACCOUNT_COLLECTION)
+	resultID1, err := collection.InsertOne(context.TODO(), account)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return resultID1.InsertedID, err
+
 }
 
 func NewAccountMongoRepository(DBConfig config.MongoCofig) AccountRepository {

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
 	"crypto/sha256"
@@ -12,7 +13,7 @@ type userServiceImpl struct {
 	UserRepository model.UserRepository
 }
 
-func (userService userServiceImpl) CreateUser(user model.User) error {
+func (userService userServiceImpl) CreateUser(user dto.UserWithPasswordDto) error {
 	if user.Password == "" {
 		return errors.New("password is required")
 	}
@@ -33,16 +34,26 @@ func (userService userServiceImpl) CreateUser(user model.User) error {
 		return errors.New("document already registered")
 	}
 
-	_, err := userService.UserRepository.CreateUser(user)
+	_, err := userService.UserRepository.CreateUser(model.User{
+		Username: user.Username, Password: user.Password, IDDocument: user.IDDocument,
+	})
 	return err
 }
 
-func (userService userServiceImpl) FindUser(username string) model.User {
+func (userService userServiceImpl) findUser(username string) model.User {
 	return userService.UserRepository.FindUserByName(username)
+}
+
+func (userService userServiceImpl) FindBasicUser(username string) dto.BasicUserDto {
+	user := userService.UserRepository.FindUserByName(username)
+	if user != (model.User{}) {
+		return dto.BasicUserDto{Username: user.Username, IDDocument: user.IDDocument}
+	}
+	return dto.BasicUserDto{}
 }
 func (userService userServiceImpl) ValidateUserameAndPassword(username string, password string) bool {
 	sha := sha256.Sum256([]byte(password))
-	user := userService.FindUser(username)
+	user := userService.findUser(username)
 	strSha := fmt.Sprintf("%x", sha)
 	return strSha == user.Password
 }

@@ -14,8 +14,9 @@ type AccountService interface {
 }
 
 type UserService interface {
-	CreateUser(user model.User) error
+	CreateUser(user dto.UserWithPasswordDto) error
 	ValidateUserameAndPassword(username string, password string) bool
+	FindBasicUser(username string) dto.BasicUserDto
 }
 
 type TransactionService interface {
