@@ -33,6 +33,9 @@ type AccountHandler interface {
 type UserHandler interface {
 	CreateUser(http.ResponseWriter, *http.Request)
 }
+type AuthenticationHandler interface {
+	Authenticate(http.ResponseWriter, *http.Request)
+}
 type Server interface {
 	Start()
 	Stop()
@@ -46,4 +49,10 @@ const (
 	TransferType string = "Transfer"
 	DepositType  string = "Deposit"
 	WithdrawType string = "Withdraw"
+)
+
+type context_key string
+
+const (
+	LoggedUserKey context_key = "loggedUser"
 )
