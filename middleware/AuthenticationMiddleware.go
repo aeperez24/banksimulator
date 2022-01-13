@@ -40,7 +40,7 @@ func (middleware authenticationMiddleware) extractToken(r *http.Request) (dto.Ba
 	return middleware.tokenService.ExtractBasicUseDtoFromToken(strArr[1])
 }
 
-func NewAuthenticationMiddlewre(tokenService port.TokenService) Middleware {
+func NewAuthenticationMiddlware(tokenService port.TokenService) Middleware {
 	return authenticationMiddleware{tokenService}
 
 }
