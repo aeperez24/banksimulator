@@ -3,8 +3,10 @@ package integrationtest
 import (
 	"aeperez24/banksimulator/config"
 	"aeperez24/banksimulator/handler"
+	"aeperez24/banksimulator/middleware"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
+	"aeperez24/banksimulator/services"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,7 +25,14 @@ func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
 	port := "11080"
 	repo := model.NewAccountMongoRepository(DBConfig)
 	achandler := handler.NewAccountHandler(repo)
-	return handler.NewServer(":"+port, achandler), port
+	tokenService := services.NewTokenService("testKey")
+	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
+	serverConfig := handler.ServerConfiguration{
+		Port:             ":" + port,
+		AccountHandler:   achandler,
+		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
+	}
+	return handler.NewServer(serverConfig), port
 }
 
 func createAccountForTests(dbConfig config.MongoCofig) []interface{} {

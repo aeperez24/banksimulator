@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"aeperez24/banksimulator/middleware"
 	"aeperez24/banksimulator/port"
 	"context"
 	"net/http"
@@ -9,21 +10,29 @@ import (
 )
 
 type ServerImpl struct {
-	AccountHandler port.AccountHandler
-	Port           string
-	HttpServer     http.Server
+	ServerConfiguration
+	HttpServer http.Server
 }
 
-func NewServer(port string, accountHandler port.AccountHandler) port.Server {
-	return ServerImpl{AccountHandler: accountHandler, Port: port}
+type ServerConfiguration struct {
+	AccountHandler   port.AccountHandler
+	MiddleWareConfig middleware.MiddlewareConfig
+	Port             string
+}
+
+func NewServer(config ServerConfiguration) port.Server {
+	return ServerImpl{ServerConfiguration: config}
 }
 
 func (mserver ServerImpl) Start() {
+
+	authMiddleware := mserver.MiddleWareConfig.AuthenticationMiddleware.Filter
 	muxHandler := mux.NewRouter()
-	muxHandler.HandleFunc("/balance/{AccountNumber}", mserver.AccountHandler.GetBalance)
-	muxHandler.HandleFunc("/transfer/", mserver.AccountHandler.TransferMoney)
-	muxHandler.HandleFunc("/deposit/", mserver.AccountHandler.Deposit)
-	muxHandler.HandleFunc("/transaction/{AccountNumber}", mserver.AccountHandler.GetTransactions)
+
+	muxHandler.HandleFunc("/balance/{AccountNumber}", authMiddleware(mserver.AccountHandler.GetBalance))
+	muxHandler.HandleFunc("/transfer/", authMiddleware(mserver.AccountHandler.TransferMoney))
+	muxHandler.HandleFunc("/deposit/", authMiddleware(mserver.AccountHandler.Deposit))
+	muxHandler.HandleFunc("/transaction/{AccountNumber}", authMiddleware(mserver.AccountHandler.GetTransactions))
 
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
 	err := mserver.HttpServer.ListenAndServe()

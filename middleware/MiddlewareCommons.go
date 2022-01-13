@@ -7,4 +7,6 @@ type Middleware interface {
 	Filter(HttpHandler) HttpHandler
 }
 
-
+type MiddlewareConfig struct {
+	AuthenticationMiddleware Middleware
+}
