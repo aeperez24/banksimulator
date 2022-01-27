@@ -28,7 +28,7 @@ func TestAuthenticateSuccessfully(t *testing.T) {
 
 		return dto.BasicUserDto{}, nil
 	}
-	mid := middleware.NewAuthenticationMiddlewre(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
+	mid := middleware.NewAuthenticationMiddlware(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(port.LoggedUserKey)
 		if user == nil {
@@ -52,7 +52,7 @@ func TestAuthenticateRejectWhenNotToken(t *testing.T) {
 
 		return dto.BasicUserDto{}, nil
 	}
-	mid := middleware.NewAuthenticationMiddlewre(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
+	mid := middleware.NewAuthenticationMiddlware(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		executed = true
 	}
@@ -71,7 +71,7 @@ func TestAuthenticateRejectWhenTokenServiceReturnError(t *testing.T) {
 
 		return dto.BasicUserDto{}, errors.New("")
 	}
-	mid := middleware.NewAuthenticationMiddlewre(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
+	mid := middleware.NewAuthenticationMiddlware(tokenServiceMock{ExtractBasicUseDtoFromTokenFn: extractMock})
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		executed = true
 	}
