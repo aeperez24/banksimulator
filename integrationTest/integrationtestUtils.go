@@ -2,6 +2,7 @@ package integrationtest
 
 import (
 	"aeperez24/banksimulator/config"
+	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/handler"
 	"aeperez24/banksimulator/middleware"
 	"aeperez24/banksimulator/model"
@@ -15,22 +16,31 @@ import (
 func RunTestWithIntegrationServer(testFunc func(port string)) {
 	DBConfig := config.BuildDBConfig()
 	server, port := createTestServer(DBConfig)
-	ids := createAccountForTests(DBConfig)
-	defer deleteAccountForTests(DBConfig, ids)
+	idAccounts := createAccountForTests(DBConfig)
+	defer deleteAccountForTests(DBConfig, idAccounts)
+	idUsers := createUserForTest(DBConfig)
+	defer deleteUsersForTests(DBConfig, idUsers)
 	go server.Start()
 	defer server.Stop()
 	testFunc(port)
 }
 func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
 	port := "11080"
-	repo := model.NewAccountMongoRepository(DBConfig)
-	achandler := handler.NewAccountHandler(repo)
+	accountRepo := model.NewAccountMongoRepository(DBConfig)
+	userRepo := model.NewUserMongoRepository(DBConfig)
+	userService := services.NewUserService(userRepo)
+	achandler := handler.NewAccountHandler(accountRepo)
+	userHandler := handler.NewUserhandler(accountRepo, userService)
 	tokenService := services.NewTokenService("testKey")
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
+	config := handler.HandlerConfig{
+		AccountHandler: achandler,
+		UserHandler:    userHandler,
+	}
 	serverConfig := handler.ServerConfiguration{
 		Port:             ":" + port,
-		AccountHandler:   achandler,
 		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
+		HandlerConfig:    config,
 	}
 	return handler.NewServer(serverConfig), port
 }
@@ -81,7 +91,54 @@ func deleteAccountForTests(dbConfig config.MongoCofig, idaToDelte []interface{})
 	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION)
 	for _, id := range idaToDelte {
 		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
-
 	}
 
+}
+
+func createUserForTest(dbConfig config.MongoCofig) []interface{} {
+
+	user1 := model.User{Username: "user1", Password: "pass1", IDDocument: "account1Number"}
+	user2 := model.User{Username: "user2", Password: "pass2", IDDocument: "account2Number"}
+	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION)
+	resultID1, error1 := collection.InsertOne(context.TODO(), user1)
+	resultID2, error2 := collection.InsertOne(context.TODO(), user2)
+	if error1 != nil {
+		println(error1)
+		panic(error1)
+	}
+	if error2 != nil {
+		println(error1)
+		panic(error1)
+	}
+	result := []interface{}{
+		resultID1.InsertedID, resultID2.InsertedID,
+	}
+	return result
+
+}
+
+func deleteUsersForTests(dbConfig config.MongoCofig, idaToDelte []interface{}) {
+	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION)
+	for _, id := range idaToDelte {
+		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
+	}
+
+}
+
+func GetJWTTokenForUser1() string {
+	tokenService := services.NewTokenService("testKey")
+	res, _ := tokenService.CreateToken(dto.BasicUserDto{
+		Username:   "user1",
+		IDDocument: "account1Number",
+	})
+	return res
+}
+
+func GetJWTTokenForUser2() string {
+	tokenService := services.NewTokenService("testKey")
+	res, _ := tokenService.CreateToken(dto.BasicUserDto{
+		Username:   "user2",
+		IDDocument: "account2Number",
+	})
+	return res
 }

@@ -18,6 +18,7 @@ type ServerConfiguration struct {
 	AccountHandler   port.AccountHandler
 	MiddleWareConfig middleware.MiddlewareConfig
 	Port             string
+	HandlerConfig    HandlerConfig
 }
 
 func NewServer(config ServerConfiguration) port.Server {
@@ -28,12 +29,15 @@ func (mserver ServerImpl) Start() {
 
 	authMiddleware := mserver.MiddleWareConfig.AuthenticationMiddleware.Filter
 	muxHandler := mux.NewRouter()
-
-	muxHandler.HandleFunc("/balance/{AccountNumber}", authMiddleware(mserver.AccountHandler.GetBalance))
-	muxHandler.HandleFunc("/transfer/", authMiddleware(mserver.AccountHandler.TransferMoney))
-	muxHandler.HandleFunc("/deposit/", authMiddleware(mserver.AccountHandler.Deposit))
-	muxHandler.HandleFunc("/transaction/{AccountNumber}", authMiddleware(mserver.AccountHandler.GetTransactions))
-
+	accountHandler := mserver.HandlerConfig.AccountHandler
+	userHandler := mserver.HandlerConfig.UserHandler
+	muxHandler.HandleFunc("/account/balance/{AccountNumber}", authMiddleware(accountHandler.GetBalance))
+	muxHandler.HandleFunc("/account/transfer/", authMiddleware(accountHandler.TransferMoney))
+	muxHandler.HandleFunc("/account/deposit/", authMiddleware(accountHandler.Deposit))
+	muxHandler.HandleFunc("/transaction/{AccountNumber}", authMiddleware(accountHandler.GetTransactions))
+	muxHandler.HandleFunc("/user/signin", userHandler.CreateUser)
+	//TODO
+	//muxHandler.HandleFunc("/user/auth", userHandler.Auth)
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
 	err := mserver.HttpServer.ListenAndServe()
 	if err != nil {

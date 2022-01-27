@@ -14,7 +14,7 @@ func TestSaveUser(t *testing.T) {
 		username := "username_for_testing"
 		dbConfig := config.BuildDBConfig()
 		user := model.User{Active: true, Username: username, Password: "pass", IDDocument: "document"}
-		repo := model.NewUserMongoRepository(dbConfig.DB)
+		repo := model.NewUserMongoRepository(dbConfig)
 		repo.CreateUser(user)
 		collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION)
 		defer collection.DeleteOne(context.TODO(), bson.M{"username": username})

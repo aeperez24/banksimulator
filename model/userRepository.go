@@ -1,6 +1,7 @@
 package model
 
 import (
+	"aeperez24/banksimulator/config"
 	"context"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -47,7 +48,7 @@ func (repo userRepositoryMongoRepository) CreateUser(user User) (interface{}, er
 	return resultID1.InsertedID, error
 }
 
-func NewUserMongoRepository(DBClient *mongo.Client) UserRepository {
-	return userRepositoryMongoRepository{DBClient: DBClient}
+func NewUserMongoRepository(DBClient config.MongoCofig) UserRepository {
+	return userRepositoryMongoRepository{DBClient: DBClient.DB}
 
 }

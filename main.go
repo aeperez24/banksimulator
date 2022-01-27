@@ -19,13 +19,23 @@ func init() {
 
 func main() {
 	repo := model.NewAccountMongoRepository(DBConfig)
+	userRepo := model.NewUserMongoRepository(DBConfig)
 	accountHandler := handler.NewAccountHandler(repo)
+
 	tokenService := services.NewTokenService("prodKey")
+	userService := services.NewUserService(userRepo)
+	userHandler := handler.NewUserhandler(repo, userService)
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
+	handlerConfig := handler.HandlerConfig{
+		AccountHandler: accountHandler,
+		UserHandler:    userHandler,
+	}
+
 	serverConfig := handler.ServerConfiguration{
 		AccountHandler:   accountHandler,
 		Port:             ":8080",
 		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
+		HandlerConfig:    handlerConfig,
 	}
 	server := handler.NewServer(serverConfig)
 	server.Start()

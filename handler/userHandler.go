@@ -6,6 +6,7 @@ import (
 	"aeperez24/banksimulator/port"
 	"encoding/json"
 	"net/http"
+	"reflect"
 )
 
 type userHandlerImpl struct {
@@ -29,13 +30,27 @@ func (handler userHandlerImpl) CreateUser(w http.ResponseWriter, r *http.Request
 		respondWithJSON(w, 400, "username already exists")
 		return
 	}
-	//TODO VALIDATE IF ACCOUNT WITH ID DOCUMENT ALREADY EXISTS
 	//TODO MODIF ACCOUNT SERVICE FOR CREATE ACCOUNT
+
+	acc := handler.AccountRepository.FindAccountByAccountNumber(user.IDDocument)
+
+	if !reflect.DeepEqual(acc, model.Account{}) {
+		respondWithJSON(w, 400, "account already exists")
+		return
+	}
+
 	_, err = handler.AccountRepository.CreateAccount(model.Account{AccountNumber: user.IDDocument})
 
 	if err != nil {
-		respondWithJSON(w, 500, "error")
+		respondWithJSON(w, 500, "error creating account")
 		return
 	}
+	err = handler.UserService.CreateUser(user)
+
+	if err != nil {
+		respondWithJSON(w, 500, "error creating user")
+		return
+	}
+
 	respondWithJSON(w, 200, "ok")
 }

@@ -10,3 +10,6 @@ type Middleware interface {
 type MiddlewareConfig struct {
 	AuthenticationMiddleware Middleware
 }
+
+
+
