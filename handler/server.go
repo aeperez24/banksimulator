@@ -36,8 +36,6 @@ func (mserver ServerImpl) Start() {
 	muxHandler.HandleFunc("/account/deposit/", authMiddleware(accountHandler.Deposit))
 	muxHandler.HandleFunc("/transaction/{AccountNumber}", authMiddleware(accountHandler.GetTransactions))
 	muxHandler.HandleFunc("/user/signin", userHandler.CreateUser)
-	//TODO
-	//muxHandler.HandleFunc("/user/auth", userHandler.Auth)
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
 	err := mserver.HttpServer.ListenAndServe()
 	if err != nil {

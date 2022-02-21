@@ -17,6 +17,7 @@ type UserService interface {
 	CreateUser(user dto.UserWithPasswordDto) error
 	ValidateUserameAndPassword(username string, password string) bool
 	FindBasicUser(username string) dto.BasicUserDto
+	FindBasicUserByDocument(document string) dto.BasicUserDto
 }
 
 type TransactionService interface {

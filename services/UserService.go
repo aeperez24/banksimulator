@@ -51,6 +51,14 @@ func (userService userServiceImpl) FindBasicUser(username string) dto.BasicUserD
 	}
 	return dto.BasicUserDto{}
 }
+func (userService userServiceImpl) FindBasicUserByDocument(document string) dto.BasicUserDto {
+	user := userService.UserRepository.FindUserByIdDocument(document)
+	if user != (model.User{}) {
+		return dto.BasicUserDto{Username: user.Username, IDDocument: user.IDDocument}
+	}
+	return dto.BasicUserDto{}
+}
+
 func (userService userServiceImpl) ValidateUserameAndPassword(username string, password string) bool {
 	sha := sha256.Sum256([]byte(password))
 	user := userService.findUser(username)

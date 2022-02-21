@@ -30,7 +30,11 @@ func (handler userHandlerImpl) CreateUser(w http.ResponseWriter, r *http.Request
 		respondWithJSON(w, 400, "username already exists")
 		return
 	}
-	//TODO MODIF ACCOUNT SERVICE FOR CREATE ACCOUNT
+	userByDocument := handler.UserService.FindBasicUserByDocument(user.Username)
+	if userByDocument != (dto.BasicUserDto{}) {
+		respondWithJSON(w, 400, "DocumentId already exists already exists")
+		return
+	}
 
 	acc := handler.AccountRepository.FindAccountByAccountNumber(user.IDDocument)
 
