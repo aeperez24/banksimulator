@@ -1,2 +1,6 @@
-curl -X POST http://localhost:8080/transfer/ -H 'Content-Type: application/json' -d '{"FromAccount":"12","ToAccount":"1234","Amount":10}'
-curl -X POST http://localhost:8080/deposit/ -H 'Content-Type: application/json' -d '{"ToAccount":"12","Amount":100}'
+curl -X POST http://localhost:8080/account/transfer/ -H 'Content-Type: application/json' -d '{"FromAccount":"12","ToAccount":"1234","Amount":10}'
+curl -X POST http://localhost:8080/account/deposit/ -H 'Content-Type: application/json' -d '{"ToAccount":"12","Amount":100}'
+
+
+curl -X POST http://localhost:8080/user/signin -H 'Content-Type: application/json' -d '{"Username":"aperez","IDDocument":"123","Password":"pass"}'
+
