@@ -35,11 +35,17 @@ func (handler accountHandlerImpl) GetTransactions(w http.ResponseWriter, r *http
 
 func (handler accountHandlerImpl) TransferMoney(w http.ResponseWriter, r *http.Request) {
 	var transferRequest dto.TransferRequest
-
+	//	TODO VALIDATE USER Credentials
 	err := json.NewDecoder(r.Body).Decode(&transferRequest)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+	user := (r.Context().Value(port.LoggedUserKey)).(dto.BasicUserDto)
+	if user.IDDocument != transferRequest.FromAccount {
+		respondWithJSON(w, 403, "")
+		return
+
 	}
 	service := handler.getAccountService(transferRequest.FromAccount)
 	trxService := handler.getTransactionService()
@@ -55,6 +61,12 @@ func (handler accountHandlerImpl) Deposit(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+	user := (r.Context().Value(port.LoggedUserKey)).(dto.BasicUserDto)
+	if user.IDDocument != depositRequest.ToAccount {
+		respondWithJSON(w, 403, "")
+		return
+
 	}
 	service := handler.getAccountService(depositRequest.ToAccount)
 	trxService := handler.getTransactionService()

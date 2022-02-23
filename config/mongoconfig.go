@@ -10,10 +10,10 @@ import (
 )
 
 func BuildDBConfig() MongoCofig {
-	host := "localhost"
-	port := 27017
-	username := "root"
-	password := "example"
+	host := "localhost"   //TODO GET FROM ENVIROMENTS VARIABLES
+	port := 27017         //TODO GET FROM ENVIROMENTS VARIABLES
+	username := "root"    //TODO GET FROM ENVIROMENTS VARIABLES
+	password := "example" //TODO GET FROM ENVIROMENTS VARIABLES
 
 	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", host, port))
 
