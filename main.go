@@ -26,9 +26,11 @@ func main() {
 	userService := services.NewUserService(userRepo)
 	userHandler := handler.NewUserhandler(repo, userService)
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
+	authHandler := handler.NewAuthenticationHandler(userService, tokenService)
 	handlerConfig := handler.HandlerConfig{
-		AccountHandler: accountHandler,
-		UserHandler:    userHandler,
+		AccountHandler:        accountHandler,
+		UserHandler:           userHandler,
+		AuthenticationHandler: authHandler,
 	}
 
 	serverConfig := handler.ServerConfiguration{

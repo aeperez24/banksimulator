@@ -29,6 +29,12 @@ func (handler accountHandlerImpl) GetBalance(w http.ResponseWriter, r *http.Requ
 func (handler accountHandlerImpl) GetTransactions(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	service := handler.getTransactionService()
+	user := (r.Context().Value(port.LoggedUserKey)).(dto.BasicUserDto)
+	if user.IDDocument != vars["AccountNumber"] {
+		respondWithJSON(w, 403, "")
+		return
+
+	}
 	transactions, _ := service.GetTransactions(vars["AccountNumber"])
 	respondWithJSON(w, 200, transactions)
 }

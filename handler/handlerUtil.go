@@ -15,6 +15,7 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 }
 
 type HandlerConfig struct {
-	AccountHandler port.AccountHandler
-	UserHandler    port.UserHandler
+	AccountHandler        port.AccountHandler
+	UserHandler           port.UserHandler
+	AuthenticationHandler port.AuthenticationHandler
 }

@@ -33,9 +33,12 @@ func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
 	userHandler := handler.NewUserhandler(accountRepo, userService)
 	tokenService := services.NewTokenService("testKey")
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
+	authHandler := handler.NewAuthenticationHandler(userService, tokenService)
+
 	config := handler.HandlerConfig{
-		AccountHandler: achandler,
-		UserHandler:    userHandler,
+		AccountHandler:        achandler,
+		UserHandler:           userHandler,
+		AuthenticationHandler: authHandler,
 	}
 	serverConfig := handler.ServerConfiguration{
 		Port:             ":" + port,
@@ -118,7 +121,7 @@ func createUserForTest(dbConfig config.MongoCofig) []interface{} {
 }
 
 func deleteUsersForTests(dbConfig config.MongoCofig, idaToDelte []interface{}) {
-	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION)
+	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION)
 	for _, id := range idaToDelte {
 		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	}

@@ -31,11 +31,14 @@ func (mserver ServerImpl) Start() {
 	muxHandler := mux.NewRouter()
 	accountHandler := mserver.HandlerConfig.AccountHandler
 	userHandler := mserver.HandlerConfig.UserHandler
+	authHandler := mserver.HandlerConfig.AuthenticationHandler
 	muxHandler.HandleFunc("/account/balance/{AccountNumber}", authMiddleware(accountHandler.GetBalance))
 	muxHandler.HandleFunc("/account/transfer/", authMiddleware(accountHandler.TransferMoney))
 	muxHandler.HandleFunc("/account/deposit/", authMiddleware(accountHandler.Deposit))
 	muxHandler.HandleFunc("/transaction/{AccountNumber}", authMiddleware(accountHandler.GetTransactions))
-	muxHandler.HandleFunc("/user/signin", userHandler.CreateUser)
+	muxHandler.HandleFunc("/user/signup", userHandler.CreateUser)
+	muxHandler.HandleFunc("/user/signin", authHandler.Authenticate)
+
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
 	err := mserver.HttpServer.ListenAndServe()
 	if err != nil {

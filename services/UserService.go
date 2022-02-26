@@ -34,8 +34,12 @@ func (userService userServiceImpl) CreateUser(user dto.UserWithPasswordDto) erro
 		return errors.New("document already registered")
 	}
 
+	paswordSha := sha256.Sum256([]byte(user.Password))
+	strSha := fmt.Sprintf("%x", paswordSha)
+
 	_, err := userService.UserRepository.CreateUser(model.User{
-		Username: user.Username, Password: user.Password, IDDocument: user.IDDocument,
+
+		Username: user.Username, Password: string(strSha), IDDocument: user.IDDocument,
 	})
 	return err
 }
