@@ -2,8 +2,6 @@ package integrationtest
 
 import (
 	"aeperez24/banksimulator/dto"
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -56,18 +54,12 @@ func TestTransferMoney(t *testing.T) {
 			Amount:      20,
 		}
 
-		body, _ := json.Marshal(transaction)
-		postBuffer := bytes.NewBuffer(body)
 		api := fmt.Sprintf("http://localhost:%s/account/transfer/", port)
-		req, _ := http.NewRequest("POST", api, postBuffer)
 		token := GetJWTTokenForUser1()
-		req.Header.Add("Authorization", fmt.Sprintf("bearer %v", token))
+		headers := make(map[string]string)
+		headers["Authorization"] = fmt.Sprintf("bearer %v", token)
+		bodyresp, _, _ := ExecuteHttpPostCall(api, transaction, headers)
 
-		client := &http.Client{
-			Timeout: time.Second * 10,
-		}
-		resp, _ := client.Do((req))
-		bodyresp, _ := ioutil.ReadAll(resp.Body)
 		//TODO ASSERT
 		println(string(bodyresp))
 
@@ -83,18 +75,11 @@ func TestDepositMoney(t *testing.T) {
 			Amount:    20,
 		}
 
-		body, _ := json.Marshal(transaction)
-		postBuffer := bytes.NewBuffer(body)
-
 		api := fmt.Sprintf("http://localhost:%s/account/deposit/", port)
-		req, _ := http.NewRequest("POST", api, postBuffer)
+		headers := make(map[string]string)
 		token := GetJWTTokenForUser1()
-		client := &http.Client{
-			Timeout: time.Second * 10,
-		}
-		req.Header.Add("Authorization", fmt.Sprintf("bearer %v", token))
-		resp, _ := client.Do((req))
-		bodyresp, _ := ioutil.ReadAll(resp.Body)
+		headers["Authorization"] = fmt.Sprintf("bearer %v", token)
+		bodyresp, _, _ := ExecuteHttpPostCall(api, transaction, headers)
 
 		//TODO ASSERT
 		println(string(bodyresp))

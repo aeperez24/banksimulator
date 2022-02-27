@@ -8,7 +8,12 @@ import (
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
 	"aeperez24/banksimulator/services"
+	"bytes"
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -144,4 +149,22 @@ func GetJWTTokenForUser2() string {
 		IDDocument: "account2Number",
 	})
 	return res
+}
+
+func ExecuteHttpPostCall(url string, bodyInterface interface{}, headers map[string]string) ([]byte, *http.Response, error) {
+	body, _ := json.Marshal(bodyInterface)
+	postBuffer := bytes.NewBuffer(body)
+
+	req, _ := http.NewRequest("POST", url, postBuffer)
+	for name, value := range headers {
+		req.Header.Add(name, value)
+	}
+
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	resp, _ := client.Do((req))
+	bodyresp, err := ioutil.ReadAll(resp.Body)
+	return bodyresp, resp, err
 }
