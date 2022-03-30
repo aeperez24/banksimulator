@@ -6,6 +6,7 @@ import (
 	"aeperez24/banksimulator/middleware"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/services"
+	"aeperez24/banksimulator/usercase"
 )
 
 var DBConfig config.MongoCofig
@@ -24,7 +25,10 @@ func main() {
 
 	tokenService := services.NewTokenService("prodKey")
 	userService := services.NewUserService(userRepo)
-	userHandler := handler.NewUserhandler(repo, userService)
+	userUserCase := usercase.UserUsercase{AccountRepository: repo,
+		UserService: userService}
+
+	userHandler := handler.NewUserhandler(userUserCase)
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
 	authHandler := handler.NewAuthenticationHandler(userService, tokenService)
 	handlerConfig := handler.HandlerConfig{
@@ -34,7 +38,6 @@ func main() {
 	}
 
 	serverConfig := handler.ServerConfiguration{
-		AccountHandler:   accountHandler,
 		Port:             ":8080",
 		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
 		HandlerConfig:    handlerConfig,

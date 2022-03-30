@@ -15,7 +15,6 @@ type ServerImpl struct {
 }
 
 type ServerConfiguration struct {
-	AccountHandler   port.AccountHandler
 	MiddleWareConfig middleware.MiddlewareConfig
 	Port             string
 	HandlerConfig    HandlerConfig

@@ -8,6 +8,7 @@ import (
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
 	"aeperez24/banksimulator/services"
+	"aeperez24/banksimulator/usercase"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -34,8 +35,10 @@ func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
 	accountRepo := model.NewAccountMongoRepository(DBConfig)
 	userRepo := model.NewUserMongoRepository(DBConfig)
 	userService := services.NewUserService(userRepo)
+	userUserCase := usercase.UserUsercase{AccountRepository: accountRepo,
+		UserService: userService}
 	achandler := handler.NewAccountHandler(accountRepo)
-	userHandler := handler.NewUserhandler(accountRepo, userService)
+	userHandler := handler.NewUserhandler(userUserCase)
 	tokenService := services.NewTokenService("testKey")
 	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
 	authHandler := handler.NewAuthenticationHandler(userService, tokenService)
