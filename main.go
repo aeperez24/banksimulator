@@ -15,7 +15,7 @@ func init() {
 }
 
 func main() {
-	serverConfig := handler.BuildServerConfig(":8080", "prodKey", DBConfig)
+	serverConfig := handler.BuildServerConfig("8080", "prodKey", DBConfig)
 	server := handler.NewServer(serverConfig)
 	server.Start()
 }
