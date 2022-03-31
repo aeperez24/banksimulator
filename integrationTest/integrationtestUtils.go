@@ -29,10 +29,8 @@ func RunTestWithIntegrationServer(testFunc func(port string)) {
 	testFunc(port)
 }
 func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
-	port := "11080"
+	port := "11081"
 	serverConfig := handler.BuildServerConfig(port, "testKey", DBConfig)
-	server := handler.NewServer(serverConfig)
-	server.Start()
 	return handler.NewServer(serverConfig), port
 }
 
