@@ -4,11 +4,9 @@ import (
 	"aeperez24/banksimulator/config"
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/handler"
-	"aeperez24/banksimulator/middleware"
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/port"
 	"aeperez24/banksimulator/services"
-	"aeperez24/banksimulator/usercase"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -32,27 +30,9 @@ func RunTestWithIntegrationServer(testFunc func(port string)) {
 }
 func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
 	port := "11080"
-	accountRepo := model.NewAccountMongoRepository(DBConfig)
-	userRepo := model.NewUserMongoRepository(DBConfig)
-	userService := services.NewUserService(userRepo)
-	userUserCase := usercase.UserUsercase{AccountRepository: accountRepo,
-		UserService: userService}
-	achandler := handler.NewAccountHandler(accountRepo)
-	userHandler := handler.NewUserhandler(userUserCase)
-	tokenService := services.NewTokenService("testKey")
-	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
-	authHandler := handler.NewAuthenticationHandler(userService, tokenService)
-
-	config := handler.HandlerConfig{
-		AccountHandler:        achandler,
-		UserHandler:           userHandler,
-		AuthenticationHandler: authHandler,
-	}
-	serverConfig := handler.ServerConfiguration{
-		Port:             ":" + port,
-		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
-		HandlerConfig:    config,
-	}
+	serverConfig := handler.BuildServerConfig(port, "testKey", DBConfig)
+	server := handler.NewServer(serverConfig)
+	server.Start()
 	return handler.NewServer(serverConfig), port
 }
 
