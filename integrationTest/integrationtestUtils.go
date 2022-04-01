@@ -25,11 +25,12 @@ func RunTestWithIntegrationServer(testFunc func(port string)) {
 	idUsers := createUserForTest(DBConfig)
 	defer deleteUsersForTests(DBConfig, idUsers)
 	go server.Start()
-	defer server.Stop()
 	testFunc(port)
+	server.Stop()
+
 }
 func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
-	port := "11081"
+	port := "11082"
 	serverConfig := handler.BuildServerConfig(port, "testKey", DBConfig)
 	return handler.NewServer(serverConfig), port
 }

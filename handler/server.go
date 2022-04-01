@@ -24,7 +24,7 @@ func NewServer(config ServerConfiguration) port.Server {
 	return ServerImpl{ServerConfiguration: config}
 }
 
-func (mserver ServerImpl) Start() {
+func (mserver ServerImpl) Start() error {
 
 	authMiddleware := mserver.MiddleWareConfig.AuthenticationMiddleware.Filter
 	muxHandler := mux.NewRouter()
@@ -39,15 +39,10 @@ func (mserver ServerImpl) Start() {
 	muxHandler.HandleFunc("/user/signin", authHandler.Authenticate)
 
 	mserver.HttpServer = http.Server{Addr: mserver.Port, Handler: muxHandler}
-	err := mserver.HttpServer.ListenAndServe()
-	if err != nil {
-		println(err)
-		panic(err)
-	}
+	return mserver.HttpServer.ListenAndServe()
 
 }
 
 func (mserver ServerImpl) Stop() {
 	mserver.HttpServer.Shutdown(context.Background())
-
 }

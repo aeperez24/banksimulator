@@ -17,5 +17,9 @@ func init() {
 func main() {
 	serverConfig := handler.BuildServerConfig("8080", "prodKey", DBConfig)
 	server := handler.NewServer(serverConfig)
-	server.Start()
+	err := server.Start()
+	if err != nil {
+		println(err)
+		panic(err)
+	}
 }

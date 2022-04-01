@@ -38,7 +38,7 @@ type AuthenticationHandler interface {
 	Authenticate(http.ResponseWriter, *http.Request)
 }
 type Server interface {
-	Start()
+	Start() error
 	Stop()
 }
 type TokenService interface {
