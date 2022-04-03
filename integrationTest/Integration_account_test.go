@@ -64,10 +64,7 @@ func TestTransferMoney(t *testing.T) {
 		headers := make(map[string]string)
 		headers["Authorization"] = fmt.Sprintf("bearer %v", token)
 		bodyresp, _, _ := ExecuteHttpPostCall(api, transaction, headers)
-
-		//TODO  fix test
-		println(string(bodyresp))
-		//		assert.Equal(t, "{\"Data\":80}", string(bodyresp), "Error transfer")
+		assert.Equal(t, "{\"Data\":80}", string(bodyresp), "Error transfer")
 
 	})
 
@@ -86,9 +83,7 @@ func TestDepositMoney(t *testing.T) {
 		token := GetJWTTokenForUser1()
 		headers["Authorization"] = fmt.Sprintf("bearer %v", token)
 		bodyresp, _, _ := ExecuteHttpPostCall(api, transaction, headers)
-
-		//TODO ASSERT
-		println(string(bodyresp))
+		assert.Equal(t, "{\"Data\":120}", string(bodyresp), "Error deposit")
 
 	})
 

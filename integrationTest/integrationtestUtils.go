@@ -83,6 +83,8 @@ func deleteAccountForTests(dbConfig config.MongoCofig, idaToDelte []interface{})
 		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	}
 
+	dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION).DeleteMany(context.TODO(), nil)
+
 }
 
 func createUserForTest(dbConfig config.MongoCofig) []interface{} {
@@ -112,6 +114,7 @@ func deleteUsersForTests(dbConfig config.MongoCofig, idaToDelte []interface{}) {
 	for _, id := range idaToDelte {
 		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	}
+	dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION).DeleteMany(context.TODO(), nil)
 
 }
 
