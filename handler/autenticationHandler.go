@@ -3,40 +3,42 @@ package handler
 import (
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/port"
-	"encoding/json"
 	"errors"
-	"fmt"
-	"net/http"
+	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
-type autenticationHandlerImpl struct {
+type GinAutenticationHandlerImpl struct {
 	userService port.UserService
 	tkservice   port.TokenService
 }
 
-func NewAuthenticationHandler(userService port.UserService, tkservice port.TokenService) port.AuthenticationHandler {
-	return autenticationHandlerImpl{userService, tkservice}
+func NewAuthenticationHandlerGin(userService port.UserService, tkservice port.TokenService) GinAutenticationHandlerImpl {
+	return GinAutenticationHandlerImpl{userService, tkservice}
 }
 
-func (handler autenticationHandlerImpl) Authenticate(w http.ResponseWriter, r *http.Request) {
+func (handler GinAutenticationHandlerImpl) Authenticate(c *gin.Context) {
 	userDto := dto.UserWithPasswordDto{}
-	err := json.NewDecoder(r.Body).Decode(&userDto)
-	fmt.Printf("user %v", userDto)
+	err := c.ShouldBindJSON(&userDto)
+	log.Printf("user %v", userDto)
 	if err != nil {
-		respondWithJSON(w, 400, err)
+		log.Fatal(err)
+		respondWithJSONGin(c, 400, "")
 		return
 	}
 
 	token, err := handler.ExecuteAuthenticaton(userDto)
-	fmt.Printf("token %v", err)
+	log.Printf("token %v", err)
 	if err != nil {
-		respondWithJSON(w, 400, err)
+		log.Fatal(err)
+		respondWithJSONGin(c, 400, "")
 		return
 	}
-	respondWithJSON(w, 200, token)
+	respondWithJSONGin(c, 200, token)
 }
 
-func (handler autenticationHandlerImpl) ExecuteAuthenticaton(userdto dto.UserWithPasswordDto) (string, error) {
+func (handler GinAutenticationHandlerImpl) ExecuteAuthenticaton(userdto dto.UserWithPasswordDto) (string, error) {
 	valid := handler.userService.ValidateUserameAndPassword(userdto.Username, userdto.Password)
 	if !valid {
 		return "", errors.New("invalid username or password")

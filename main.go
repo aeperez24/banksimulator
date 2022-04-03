@@ -15,11 +15,12 @@ func init() {
 }
 
 func main() {
-	serverConfig := handler.BuildServerConfig("8080", "prodKey", DBConfig)
-	server := handler.NewServer(serverConfig)
+	serverConfig := handler.BuildServerConfigGin("8080", "prodKey", DBConfig)
+	server := handler.NewGinServer(serverConfig)
 	err := server.Start()
 	if err != nil {
 		println(err)
 		panic(err)
 	}
+	server.Start()
 }

@@ -6,31 +6,34 @@ import (
 	"context"
 	"errors"
 	"log"
-	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
-type authenticationMiddleware struct {
+type authenticationMiddlewareGin struct {
 	tokenService port.TokenService
 }
 
-func (middleware authenticationMiddleware) Filter(handler HttpHandler) HttpHandler {
+func (middleware authenticationMiddlewareGin) getMiddleware() func(c *gin.Context) {
 
-	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := middleware.extractToken(r)
+	return func(c *gin.Context) {
+		user, err := middleware.extractToken(c)
 		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(400)
+			c.JSON(400, nil)
 			return
 		}
 		log.Printf("user :%v", user)
-		handler(w, r.WithContext(context.WithValue(r.Context(), port.LoggedUserKey, user)))
+		ncontext := context.WithValue(c.Request.Context(), port.LoggedUserKey, user)
+		c.Request = c.Request.WithContext(ncontext)
+
+		c.Next()
 	}
 
 }
 
-func (middleware authenticationMiddleware) extractToken(r *http.Request) (dto.BasicUserDto, error) {
-	bearToken := r.Header.Get("Authorization")
+func (middleware authenticationMiddlewareGin) extractToken(c *gin.Context) (dto.BasicUserDto, error) {
+	bearToken := c.Request.Header.Get("Authorization")
 
 	strArr := strings.Split(bearToken, " ")
 	if len(strArr) != 2 {
@@ -40,7 +43,7 @@ func (middleware authenticationMiddleware) extractToken(r *http.Request) (dto.Ba
 	return middleware.tokenService.ExtractBasicUseDtoFromToken(strArr[1])
 }
 
-func NewAuthenticationMiddlware(tokenService port.TokenService) Middleware {
-	return authenticationMiddleware{tokenService}
+func NewAuthenticationMiddlwareGin(tokenService port.TokenService) func(c *gin.Context) {
+	return authenticationMiddlewareGin{tokenService}.getMiddleware()
 
 }

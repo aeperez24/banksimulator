@@ -8,35 +8,35 @@ import (
 	"aeperez24/banksimulator/usercase"
 )
 
-func BuildServerConfig(portNumber string, tokenKey string, mongo config.MongoCofig) ServerConfiguration {
+func BuildServerConfigGin(portNumber string, tokenKey string, mongo config.MongoCofig) ServerConfigurationGin {
 	repo := model.NewAccountMongoRepository(mongo)
+	tokenService := services.NewTokenService(tokenKey)
 	userRepo := model.NewUserMongoRepository(mongo)
+	userService := services.NewUserService(userRepo)
 
 	accountUseCase := usercase.AccountUsercase{
 		AccountRepository:  repo,
 		TransactionService: services.NewTransactionService(repo),
 	}
+	accountHandler := GinAccountHandlerImpl{accountUseCase}
+	authHandler := NewAuthenticationHandlerGin(userService, tokenService)
 
-	tokenService := services.NewTokenService(tokenKey)
-	userService := services.NewUserService(userRepo)
 	userUserCase := usercase.UserUsercase{AccountRepository: repo,
 		UserService: userService}
 
-	accountHandler := NewAccountHandler(accountUseCase)
+	userHandler := NewGinUserhandler(userUserCase)
 
-	userHandler := NewUserhandler(userUserCase)
-	authMiddleware := middleware.NewAuthenticationMiddlware(tokenService)
-	authHandler := NewAuthenticationHandler(userService, tokenService)
-	handlerConfig := HandlerConfig{
+	handlerConfig := HandlerConfigGin{
 		AccountHandler:        accountHandler,
-		UserHandler:           userHandler,
 		AuthenticationHandler: authHandler,
+		UserHandler:           userHandler,
 	}
 
-	serverConfig := ServerConfiguration{
-		Port:             ":" + portNumber,
-		MiddleWareConfig: middleware.MiddlewareConfig{AuthenticationMiddleware: authMiddleware},
-		HandlerConfig:    handlerConfig,
+	middlewareConfig := MiddlewareConfigGin{AuthenticationMiddleware: middleware.NewAuthenticationMiddlwareGin(tokenService)}
+	serverConfig := ServerConfigurationGin{
+		Port:                ":" + portNumber,
+		HandlerConfig:       handlerConfig,
+		MiddlewareConfigGin: middlewareConfig,
 	}
 
 	return serverConfig

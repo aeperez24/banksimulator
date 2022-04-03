@@ -2,32 +2,31 @@ package handler
 
 import (
 	"aeperez24/banksimulator/dto"
-	"aeperez24/banksimulator/port"
 	"aeperez24/banksimulator/usercase"
-	"encoding/json"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-type userHandlerImpl struct {
+type GinUserHandlerImpl struct {
 	usercase.UserUsercase
 }
 
-func NewUserhandler(useCase usercase.UserUsercase) port.UserHandler {
-	return userHandlerImpl{useCase}
+func NewGinUserhandler(useCase usercase.UserUsercase) GinUserHandlerImpl {
+	return GinUserHandlerImpl{useCase}
 }
 
-func (handler userHandlerImpl) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (handler GinUserHandlerImpl) CreateUser(c *gin.Context) {
 	user := dto.UserWithPasswordDto{}
-	err := json.NewDecoder(r.Body).Decode(&user)
+	err := c.ShouldBindJSON(&user)
 	if err != nil {
-		respondWithJSON(w, 500, "error")
+		respondWithJSONGin(c, 500, "error")
 		return
 	}
 	usecaseError := handler.UserUsercase.CreateUser(user)
 	if usecaseError != (usercase.UserCaseError{}) {
-		respondWithJSON(w, usecaseError.Code, usecaseError.Message)
+		respondWithJSONGin(c, usecaseError.Code, usecaseError.Message)
 		return
 	}
 
-	respondWithJSON(w, 200, "ok")
+	respondWithJSONGin(c, 200, "ok")
 }
