@@ -10,7 +10,7 @@ import (
 )
 
 func TestSaveUser(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 		username := "username_for_testing"
 		dbConfig := config.BuildDBConfig()
 		user := model.User{Active: true, Username: username, Password: "pass", IDDocument: "document"}

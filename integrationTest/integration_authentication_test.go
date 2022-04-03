@@ -13,7 +13,7 @@ import (
 )
 
 func TestAuthUser(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 		username := "username_for_integration_testing"
 		document := "document_for_integration_testing"
 		password := "pass"

@@ -17,9 +17,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func RunTestWithIntegrationServer(testFunc func(port string)) {
+func RunTestWithIntegrationServerGin(testFunc func(port string)) {
 	DBConfig := config.BuildDBConfig()
-	server, port := createTestServer(DBConfig)
+	server, port := createTestServerGin(DBConfig)
 	idAccounts := createAccountForTests(DBConfig)
 	defer deleteAccountForTests(DBConfig, idAccounts)
 	idUsers := createUserForTest(DBConfig)
@@ -29,10 +29,11 @@ func RunTestWithIntegrationServer(testFunc func(port string)) {
 	server.Stop()
 
 }
-func createTestServer(DBConfig config.MongoCofig) (port.Server, string) {
+
+func createTestServerGin(DBConfig config.MongoCofig) (port.Server, string) {
 	port := "11082"
-	serverConfig := handler.BuildServerConfig(port, "testKey", DBConfig)
-	return handler.NewServer(serverConfig), port
+	serverConfig := handler.BuildServerConfigGin(port, "testKey", DBConfig)
+	return handler.NewGinServer(serverConfig), port
 }
 
 func createAccountForTests(dbConfig config.MongoCofig) []interface{} {

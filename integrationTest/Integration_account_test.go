@@ -12,7 +12,7 @@ import (
 )
 
 func TestGetBalance(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 		api := fmt.Sprintf("http://localhost:%s/account/balance/account1Number", port)
 		req, _ := http.NewRequest("GET", api, nil)
 		token := GetJWTTokenForUser1()
@@ -29,8 +29,9 @@ func TestGetBalance(t *testing.T) {
 
 	})
 }
+
 func TestGetTransactions(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 		api := fmt.Sprintf("http://localhost:%s/transaction/account1Number", port)
 		req, _ := http.NewRequest("GET", api, nil)
 		token := GetJWTTokenForUser1()
@@ -51,7 +52,7 @@ func TestGetTransactions(t *testing.T) {
 }
 
 func TestTransferMoney(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 
 		transaction := dto.TransferRequest{
 			FromAccount: "account1Number",
@@ -71,7 +72,7 @@ func TestTransferMoney(t *testing.T) {
 }
 
 func TestDepositMoney(t *testing.T) {
-	RunTestWithIntegrationServer(func(port string) {
+	RunTestWithIntegrationServerGin(func(port string) {
 
 		transaction := dto.DepositRequest{
 			ToAccount: "account1Number",
