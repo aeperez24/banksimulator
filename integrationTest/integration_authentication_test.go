@@ -4,11 +4,11 @@ import (
 	"aeperez24/banksimulator/config"
 	"aeperez24/banksimulator/dto"
 	"aeperez24/banksimulator/model"
-	"aeperez24/banksimulator/test"
 	"context"
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -37,11 +37,8 @@ func TestAuthUser(t *testing.T) {
 
 		ExecuteHttpPostCall(apiSignUp, userdto, nil)
 		bodyresp, resp, err := ExecuteHttpPostCall(apiSignIn, userdto, nil)
-		assertHelper := test.AssertHelper{
-			T: t,
-		}
-		assertHelper.Assert(200, resp.StatusCode)
-		assertHelper.Assert(nil, err)
+		assert.Equal(t, 200, resp.StatusCode, "status wrong")
+		assert.Nil(t, err, "error should be nil")
 		println(string(bodyresp))
 
 	})

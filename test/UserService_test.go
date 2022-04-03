@@ -5,6 +5,8 @@ import (
 	"aeperez24/banksimulator/model"
 	"aeperez24/banksimulator/services"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -28,14 +30,9 @@ func TestCreateUser(t *testing.T) {
 	user.Username = "user"
 	user.IDDocument = "document"
 
-	error := service.CreateUser(user)
-	if error != nil {
-		t.Errorf("expected %v and received %v", nil, error)
-	}
-	if !createCalled {
-		t.Errorf("expected %v and received %v", true, createCalled)
-	}
-
+	err := service.CreateUser(user)
+	assert.Nil(t, err)
+	assert.True(t, createCalled, "expected called")
 }
 
 func TestMustFailWhenCreateUserWithUsernameInDatabase(t *testing.T) {
