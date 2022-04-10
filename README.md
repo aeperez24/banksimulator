@@ -1,31 +1,26 @@
 # banksimulator
-Aplicacion Backend con las siguientes funcionalidades:
+Application features:
 
-## Registro
-Campos:
-- Nombre
+## Sign up
+Endpoint to  create a new account, required fields are:
+- Name
 - Rut
-- correo
-- contraseña.
-Todos los campos son obligatorios, solo debe permitir una cuenta
-    por Rut.
+- email
+- password
 
-## Carga de Saldo
-endpoint que permita agregar fondos una cuenta (simulando un depósito de fondos), solo debe
-llevar un input que permita ingresar el monto a depositar y un botón que permita aceptar.
+every fields are required, and it's allowed to create only one account per Rut.
 
-## Retiro de Saldo
-endpoint que permita retirar dinero de una cuenta, solo un campo del monto a retirar y un aceptar.
-La cuenta no puede quedar con saldo negativo
+## Sign in
+Endpoint to generate a jwt token,  wich provide authorization to consume others endpoints
 
-## Transferencia
-endpoint para transferir a un tercero, se debe solicitar como entrada el Rut destino y el monto a
-transferir, el monto permitido debe ser menor o igual al saldo disponible en la cuenta origen. La
-cuenta origen no puede quedar con saldo negativo, se debe validar que la cuenta destino este
-registrada en el sistema.
+# Deposit 
+endpoint  to add funds  to account (simulating a bank deposit)
 
-## Listado de movimientos
-Debe mostrar los movimientos realizados (para cada cliente consultado), ya se cargas de saldo y
-transferencias (entrantes y salientes).
+## Withdraw
+endpoint to reduce  funds from account (simulating a bank withdraw), accounts can`t have negative funds.
 
+## Transfer
+endpoint to move funds between accounts, rut of target account and amount  are required  fields, source account can`t end up with negative balance,  it is required to validate that target account is registered in the system.
 
+# Transaction history
+endpoint to retrieve all transactions for a consulted account, including withdraws, deposits and transfers (incoming and outcoming) 
