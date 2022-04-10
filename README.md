@@ -3,11 +3,11 @@ Aplicacion Backend con las siguientes funcionalidades:
 
 ## Registro
 Campos:
-    - Nombre
-    - Rut
-    - correo
-    - contraseña.
-    Todos los campos son obligatorios, solo debe permitir una cuenta
+- Nombre
+- Rut
+- correo
+- contraseña.
+Todos los campos son obligatorios, solo debe permitir una cuenta
     por Rut.
 
 ## Carga de Saldo
