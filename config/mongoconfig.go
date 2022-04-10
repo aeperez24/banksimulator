@@ -4,18 +4,19 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func BuildDBConfig() MongoCofig {
-	host := "localhost"   //TODO GET FROM ENVIROMENTS VARIABLES
-	port := 27017         //TODO GET FROM ENVIROMENTS VARIABLES
-	username := "root"    //TODO GET FROM ENVIROMENTS VARIABLES
-	password := "example" //TODO GET FROM ENVIROMENTS VARIABLES
+	host := os.Getenv("DATABASE_HOST")
+	port := os.Getenv("DATABASE_PORT")
+	username := os.Getenv("DATABASE_USERNAME")
+	password := os.Getenv("DATABASE_PASSWORD")
 
-	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%d", host, port))
+	clientOpts := options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", host, port))
 
 	clientOpts.Auth = &options.Credential{Username: username, Password: password}
 	client, err := mongo.Connect(context.TODO(), clientOpts)

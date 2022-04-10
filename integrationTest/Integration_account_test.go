@@ -22,7 +22,6 @@ func TestGetBalance(t *testing.T) {
 		}
 		resp, _ := client.Do((req))
 		body, _ := ioutil.ReadAll(resp.Body)
-		//TODO ASSERT
 		println(string(body))
 		println(resp.StatusCode)
 		assert.Equal(t, "{\"Data\":100}", string(body), "Error get balance")

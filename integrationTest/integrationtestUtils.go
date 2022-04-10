@@ -13,11 +13,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func RunTestWithIntegrationServerGin(testFunc func(port string)) {
+	config.LoadViperConfig("../envs/", "isolation")
 	DBConfig := config.BuildDBConfig()
 	server, port := createTestServerGin(DBConfig)
 	idAccounts := createAccountForTests(DBConfig)
@@ -79,13 +78,7 @@ func createAccountForTests(dbConfig config.MongoCofig) []interface{} {
 }
 
 func deleteAccountForTests(dbConfig config.MongoCofig, idaToDelte []interface{}) {
-	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION)
-	for _, id := range idaToDelte {
-		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
-	}
-
 	dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.ACCOUNT_COLLECTION).DeleteMany(context.TODO(), nil)
-
 }
 
 func createUserForTest(dbConfig config.MongoCofig) []interface{} {
@@ -111,10 +104,6 @@ func createUserForTest(dbConfig config.MongoCofig) []interface{} {
 }
 
 func deleteUsersForTests(dbConfig config.MongoCofig, idaToDelte []interface{}) {
-	collection := dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION)
-	for _, id := range idaToDelte {
-		collection.DeleteOne(context.TODO(), bson.M{"_id": id})
-	}
 	dbConfig.DB.Database(dbConfig.DatabaseName).Collection(model.USER_COLLECTION).DeleteMany(context.TODO(), nil)
 
 }
